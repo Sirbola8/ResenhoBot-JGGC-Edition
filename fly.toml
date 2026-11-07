@@ -7,7 +7,7 @@ primary_region = "gru"
   PYTHONUNBUFFERED = "1"
 
 [processes]
-  app = "sleep infinity"
+  app = "python bot.py"
 
 [[vm]]
   memory = "512mb"

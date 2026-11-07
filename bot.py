@@ -81,6 +81,7 @@ def _salvar_configuracoes_servidores():
 
 guild_settings = _carregar_configuracoes_servidores()
 _setup_lock = asyncio.Lock()
+_automatic_notifications_lock = asyncio.Lock()
 _prompted_guilds = set()
 _pending_team_confirmations = set()
 BRAZILIAN_TEAM_SET = set(BRAZILIAN_TEAMS)
@@ -399,6 +400,169 @@ def _canais_configurados(configuracao):
     return canais
 
 
+def _inicio_jogo(jogo):
+    try:
+        inicio = datetime.datetime.strptime(
+            f"{jogo.get('data', '')} {str(jogo.get('hora', ''))[:5]}",
+            '%Y-%m-%d %H:%M',
+        )
+    except (TypeError, ValueError):
+        return None
+    return FUSO_BRASIL.localize(inicio)
+
+
+def _chave_partida_agendada(jogo):
+    campos = (
+        jogo.get('id', ''), jogo.get('liga', ''), jogo.get('data', ''),
+        jogo.get('hora', ''), jogo.get('mandante', ''), jogo.get('visitante', ''),
+    )
+    return '|'.join(_normalizar_entrada(campo) for campo in campos)
+
+
+def _avisos_agendados_devidos(jogo, agora, janela):
+    if str(jogo.get('tipo_status', '')).upper() == 'ENCERRADO':
+        return []
+
+    inicio = _inicio_jogo(jogo)
+    if inicio is None:
+        return []
+
+    avisos = []
+    status = str(jogo.get('tipo_status', '')).upper()
+    if inicio > agora and status != 'AO_VIVO':
+        for nome, antecedencia in (
+            ('24h', datetime.timedelta(hours=24)),
+            ('30m', datetime.timedelta(minutes=30)),
+        ):
+            horario_aviso = inicio - antecedencia
+            if horario_aviso <= agora < horario_aviso + janela:
+                avisos.append(nome)
+
+    horario_diario = agora.replace(hour=13, minute=0, second=0, microsecond=0)
+    if (
+        inicio.date() == agora.date()
+        and horario_diario <= agora < horario_diario + janela
+    ):
+        avisos.append('13h')
+    return avisos
+
+
+def _mensagem_aviso_agendado(jogo, avisos):
+    mandante = discord.utils.escape_markdown(str(jogo.get('mandante', '?')))
+    visitante = discord.utils.escape_markdown(str(jogo.get('visitante', '?')))
+    partida = f'**{mandante} x {visitante}**'
+    linhas = []
+    if '24h' in avisos:
+        linhas.append(
+            f'🗓️ Falta 24 horas para {partida}. Já deixa a corneta carregando e a desculpa no jeito.'
+        )
+    if '30m' in avisos:
+        linhas.append(
+            f'⏳ Faltam 30 minutos para {partida}. Vai preparando o sofá: daqui a pouco começa a resenha.'
+        )
+    if '13h' in avisos:
+        linhas.append(
+            f'🕐 Lembrete das 13h (Brasília): {partida} ainda não foi encerrada. A corneta segue liberada.'
+        )
+    return '\n'.join(linhas)
+
+
+async def enviar_avisos_partidas_agendados():
+    try:
+        with open(DATA_PATH, 'r', encoding='utf-8') as arquivo:
+            jogos = json.load(arquivo)
+        if not isinstance(jogos, list):
+            return
+    except (OSError, json.JSONDecodeError) as error:
+        print(f'[AGENDA] Não foi possível carregar as partidas futuras: {error}')
+        return
+
+    agora = datetime.datetime.now(FUSO_BRASIL)
+    # O verificador roda a cada 15s; a janela curta absorve o atraso do ciclo sem
+    # transformar os avisos de 24h/30min em lembretes enviados muito depois.
+    janela = datetime.timedelta(seconds=60)
+    async with _automatic_notifications_lock:
+        for guild in bot.guilds:
+            configuracao = guild_settings.get(str(guild.id), {})
+            if not configuracao.get('initialized'):
+                continue
+            times = configuracao.get('teams') or []
+            canais_ids = _canais_configurados(configuracao)
+            if not times or not canais_ids:
+                continue
+
+            avisos_enviados = configuracao.setdefault('scheduled_alerts', {})
+            if not isinstance(avisos_enviados, dict):
+                avisos_enviados = {}
+                configuracao['scheduled_alerts'] = avisos_enviados
+
+            for jogo in jogos:
+                if not isinstance(jogo, dict):
+                    continue
+                if not any(
+                    time_corresponde(jogo.get(lado, ''), time)
+                    for lado in ('mandante', 'visitante')
+                    for time in times
+                ):
+                    continue
+
+                avisos_devidos = _avisos_agendados_devidos(jogo, agora, janela)
+                if not avisos_devidos:
+                    continue
+
+                chave_partida = _chave_partida_agendada(jogo)
+                inicio = _inicio_jogo(jogo)
+                chaves_novas = []
+                avisos_novos = []
+                for tipo_aviso in avisos_devidos:
+                    data_aviso = agora.date().isoformat() if tipo_aviso == '13h' else inicio.isoformat()
+                    chave_aviso = f'{chave_partida}|{tipo_aviso}|{data_aviso}'
+                    if chave_aviso not in avisos_enviados:
+                        chaves_novas.append(chave_aviso)
+                        avisos_novos.append(tipo_aviso)
+                if not chaves_novas:
+                    continue
+
+                # Grava a reserva antes do envio: se o processo reiniciar durante o envio,
+                # o mesmo aviso não será disparado de novo no próximo ciclo.
+                for chave_aviso in chaves_novas:
+                    avisos_enviados[chave_aviso] = {
+                        'status': 'pending',
+                        'reserved_at': agora.isoformat(),
+                    }
+                _salvar_configuracoes_servidores()
+
+                houve_envio = False
+                mensagem = _mensagem_aviso_agendado(jogo, avisos_novos)
+                for canal_id in canais_ids:
+                    canal = bot.get_channel(canal_id)
+                    if canal is None:
+                        try:
+                            canal = await bot.fetch_channel(canal_id)
+                        except discord.HTTPException as error:
+                            print(f'[AGENDA] Canal {canal_id} indisponível: {error}')
+                            continue
+                    try:
+                        await canal.send(
+                            mensagem,
+                            allowed_mentions=discord.AllowedMentions.none(),
+                        )
+                        houve_envio = True
+                    except discord.HTTPException as error:
+                        print(f'[AGENDA] Falha ao enviar aviso em {canal_id}: {error}')
+
+                if houve_envio:
+                    for chave_aviso in chaves_novas:
+                        avisos_enviados[chave_aviso] = {
+                            'status': 'sent',
+                            'sent_at': agora.isoformat(),
+                        }
+                else:
+                    for chave_aviso in chaves_novas:
+                        avisos_enviados.pop(chave_aviso, None)
+                _salvar_configuracoes_servidores()
+
+
 def _jogos_selecao_registrados():
     """Retorna os registros envolvendo a Seleção, sem depender do nome da competição."""
     try:
@@ -441,18 +605,21 @@ async def _exigir_configuracao_servidor(ctx):
     return True
 
 
-def _canal_de_configuracao(guild, canal_preferido_id=None):
+def _canal_geral_de_configuracao(guild):
+    """Escolhe um canal com nome de chat geral no qual o bot possa falar."""
     membro_bot = guild.me
     if membro_bot is None:
         return None
-    canais = []
-    if canal_preferido_id:
-        canal_preferido = guild.get_channel(canal_preferido_id)
-        if canal_preferido:
-            canais.append(canal_preferido)
-    if guild.system_channel and guild.system_channel not in canais:
-        canais.append(guild.system_channel)
-    canais.extend(canal for canal in guild.text_channels if canal not in canais)
+
+    canais = [
+        canal for canal in guild.text_channels
+        if {'geral', 'general'} & set(_normalizar_entrada(canal.name).split())
+    ]
+    canais.sort(key=lambda canal: (
+        0 if _normalizar_entrada(canal.name) in {'geral', 'general'} else 1,
+        0 if canal == guild.system_channel else 1,
+        canal.position,
+    ))
     for canal in canais:
         permissoes = canal.permissions_for(membro_bot)
         if permissoes.view_channel and permissoes.send_messages:
@@ -483,14 +650,12 @@ async def iniciar_configuracao_servidor(guild):
             configuracao.setdefault('initialized', False)
             configuracao.setdefault('prompted', False)
 
-        if guild.id in _prompted_guilds:
+        if configuracao.get('prompted') or guild.id in _prompted_guilds:
             return
 
-        canal = _canal_de_configuracao(
-            guild, configuracao.get('setup_channel_id')
-        )
+        canal = _canal_geral_de_configuracao(guild)
         if canal is None:
-            print(f'[CONFIG] Sem canal acessível para iniciar {guild.name} ({guild.id}).')
+            print(f'[CONFIG] Sem canal geral acessível para iniciar {guild.name} ({guild.id}).')
             return
 
         nomes_times = ', '.join(BRAZILIAN_TEAMS)
@@ -500,7 +665,9 @@ async def iniciar_configuracao_servidor(guild):
                 f'Qual dos 12 grandes do Brasil você quer monitorar primeiro, fiscal de sofá?\n'
                 f'{nomes_times}\n\n'
                 f'Responde com o nome do time aqui. Depois, usa `!<nome do time>` '
-                f'pra adicionar ou remover qualquer um dos 27 clubes. Bora, não me deixa falando sozinho.'
+                f'pra adicionar ou remover qualquer um dos 27 clubes. '
+                f'Se precisar abrir esta configuração de novo, manda `!config`. '
+                f'Bora, não me deixa falando sozinho.'
             )
         except discord.HTTPException as error:
             print(f'[CONFIG] Não foi possível perguntar em {guild.name}: {error}')
@@ -511,6 +678,98 @@ async def iniciar_configuracao_servidor(guild):
         configuracao['prompted'] = True
         _salvar_configuracoes_servidores()
         _prompted_guilds.add(guild.id)
+
+
+@bot.command(name='configresenha', aliases=[
+    'config', 'configuracao', 'configuração', 'configurar',
+    'configuracaoresenha', 'configuraçãoresenha', 'configurarresenha', 'setup',
+])
+async def configresenha(ctx):
+    """Mostra ou reabre a configuração do ResenhoBot neste servidor."""
+    if ctx.guild is None:
+        await ctx.send('Esse comando precisa ser usado em um servidor, pô.')
+        return
+
+    chave = str(ctx.guild.id)
+    configuracao = guild_settings.get(chave)
+    if not isinstance(configuracao, dict):
+        configuracao = {
+            'teams': [],
+            'channel_id': None,
+            'setup_channel_id': None,
+            'initialized': False,
+            'prompted': False,
+        }
+        guild_settings[chave] = configuracao
+    else:
+        configuracao.setdefault('teams', [])
+        configuracao.setdefault('channel_id', None)
+        configuracao.setdefault('setup_channel_id', None)
+        configuracao.setdefault('initialized', False)
+        configuracao.setdefault('prompted', False)
+
+    nomes_times = ', '.join(BRAZILIAN_TEAMS)
+    if configuracao.get('initialized'):
+        times = ', '.join(configuracao.get('teams') or []) or 'nenhum clube cadastrado'
+        await ctx.send(
+            f'{ctx.author.mention}, **Configuração do ResenhoBot**\n'
+            f'Times monitorados neste servidor: **{times}**. Use `!<nome do time>` '
+            f'para adicionar ou remover clubes. Para ver os outros comandos, manda `!ajuda`.'
+        )
+        return
+
+    try:
+        await ctx.send(
+            f'⚽ **Vamos configurar o ResenhoBot!**\n'
+            f'Qual dos 12 grandes do Brasil você quer monitorar primeiro, fiscal de sofá?\n'
+            f'{nomes_times}\n\n'
+            f'Responde com o nome do time aqui. Depois, usa `!<nome do time>` '
+            f'pra adicionar ou remover qualquer um dos 27 clubes.'
+        )
+    except discord.HTTPException as error:
+        print(f'[CONFIG] Não foi possível perguntar em {ctx.guild.name}: {error}')
+        return
+
+    configuracao['setup_channel_id'] = ctx.channel.id
+    configuracao['channel_id'] = ctx.channel.id
+    configuracao['prompted'] = True
+    _salvar_configuracoes_servidores()
+    _prompted_guilds.add(ctx.guild.id)
+
+
+@bot.command(name='aqui')
+async def aqui(ctx):
+    """Define o canal atual como único destino dos avisos automáticos do servidor."""
+    if ctx.guild is None:
+        await ctx.send('Esse comando precisa ser usado em um servidor, pô.')
+        return
+
+    chave = str(ctx.guild.id)
+    async with _automatic_notifications_lock:
+        configuracao = guild_settings.get(chave)
+        if not isinstance(configuracao, dict):
+            configuracao = {
+                'teams': [],
+                'channel_id': None,
+                'setup_channel_id': None,
+                'initialized': False,
+                'prompted': False,
+            }
+            guild_settings[chave] = configuracao
+        configuracao['channel_id'] = ctx.channel.id
+        if not configuracao.get('initialized'):
+            configuracao['setup_channel_id'] = ctx.channel.id
+        try:
+            _salvar_configuracoes_servidores()
+        except OSError as error:
+            print(f'[CANAL] Não foi possível salvar o canal de {ctx.guild.name}: {error}')
+            await ctx.send('Não consegui salvar este canal agora. Tenta o `!aqui` de novo daqui a pouco.')
+            return
+
+    await ctx.send(
+        f'📍 Fechou, {ctx.channel.mention}! Os avisos automáticos deste servidor '
+        f'ficam somente aqui. Se quiser trocar, use `!aqui` no outro canal.'
+    )
 
 
 async def _confirmar_remocao(ctx, time):
@@ -993,16 +1252,18 @@ async def enviar_tabela_do_dia(
 async def on_ready():
     try:
         removidos = limpar_cache_consultas()
-        print(f"[PARTIDA] Cache de consultas limpo ({removidos} registro(s)); cadastros de estÃ¡dios preservados.")
+        print(f"[PARTIDA] Cache de consultas limpo ({removidos} registro(s)); cadastros de estadios preservados.")
     except OSError as error:
-        print(f"[PARTIDA] NÃ£o foi possÃ­vel limpar o cache de consultas: {error}")
+        print(f"[PARTIDA] Não foi possível limpar o cache de consultas: {error}")
 
-    for guild in bot.guilds:
-        await iniciar_configuracao_servidor(guild)
     if monitoring_loop.is_running():
         monitoring_loop.restart()
     else:
         monitoring_loop.start()
+    if scheduled_notifications_loop.is_running():
+        scheduled_notifications_loop.restart()
+    else:
+        scheduled_notifications_loop.start()
     print(f'Sucesso! Bot conectado como: {bot.user.name}')
 
 
@@ -1091,6 +1352,8 @@ async def ajuda(ctx):
     help_text = (
         f"Salve, {ctx.author.mention}! Tá perdido nos comando, né? Respira e escolhe aí, fiscal de sofá. 😎\n\n"
         "Comandos disponíveis:\n"
+        "`!configresenha`, `!config`, `!configuração` ou `!configurar` - Abre a configuração do servidor.\n"
+        "`!aqui` - Define este canal como destino único dos avisos automáticos.\n"
         "`!salve` - Ganha um salve de volta, sortudo.\n"
         "`!ajuda` - Mostra essa lista, já que a memória falhou.\n\n"
         "`!<nome do time>` - Liga ou desliga o monitoramento automático do clube neste servidor.\n"
@@ -1119,7 +1382,7 @@ async def datafifa(ctx):
 
 # !selecao e apelidos: lista as partidas da Seleção registradas na coleta do Flashscore.
 @bot.command(aliases=[
-    'seleção', 'seleçãocanarinho', 'seleçãocararinho',
+    'seleção', 'seleçãocanarinho', 'seleçãobrasileira',
     'canarinho', 'seleçãobostileira',
 ])
 async def selecao(ctx):
@@ -1247,6 +1510,15 @@ async def jogosliberta(ctx):
     )
 
 
+# MONITORAMENTO: reavalia avisos de horário com intervalo curto e estado persistente.
+@tasks.loop(seconds=15)
+async def scheduled_notifications_loop():
+    try:
+        await enviar_avisos_partidas_agendados()
+    except Exception as error:
+        print(f'[AGENDA] Falha ao verificar avisos de partidas futuras: {error}')
+
+
 # MONITORAMENTO: atualiza os dados globais; os avisos automáticos abaixo respeitam o filtro de cada servidor.
 @tasks.loop(seconds=CHECK_INTERVAL)
 async def monitoring_loop():
@@ -1292,16 +1564,21 @@ async def monitoring_loop():
                         if not configuracao.get('initialized'):
                             continue
                         for canal_id in _canais_configurados(configuracao):
-                            canal = bot.get_channel(canal_id)
-                            if canal is None:
-                                try:
-                                    canal = await bot.fetch_channel(canal_id)
-                                except discord.HTTPException:
+                            async with _automatic_notifications_lock:
+                                if canal_id not in _canais_configurados(
+                                    guild_settings.get(str(guild.id), {})
+                                ):
                                     continue
-                            try:
-                                await canal.send(AVISO_SELECAO_BRASILEIRA)
-                            except discord.HTTPException as error:
-                                print(f'[SELEÇÃO] Falha ao enviar aviso em {canal_id}: {error}')
+                                canal = bot.get_channel(canal_id)
+                                if canal is None:
+                                    try:
+                                        canal = await bot.fetch_channel(canal_id)
+                                    except discord.HTTPException:
+                                        continue
+                                try:
+                                    await canal.send(AVISO_SELECAO_BRASILEIRA)
+                                except discord.HTTPException as error:
+                                    print(f'[SELEÇÃO] Falha ao enviar aviso em {canal_id}: {error}')
                 _aviso_selecao_verificado_nesta_execucao = True
         except Exception as error:
             print(f'[SELEÇÃO] Não foi possível avaliar o aviso de data FIFA: {error}')
@@ -1318,35 +1595,40 @@ async def monitoring_loop():
         times_brasileiros = _times_do_servidor(guild.id, 'brasil')
         times_europeus = _times_do_servidor(guild.id, 'europa')
         for canal_id in canais_ids:
-            try:
-                await verificar_resenha(
-                    bot=bot,
-                    alert_channel_id=canal_id,
-                    rival_teams=times_brasileiros,
-                    european_teams=times_europeus,
-                    proximo_jogo_europeu_func=(
-                        lambda: obter_proximo_jogo_european_teams(
-                            times_filtro=times_europeus
-                        )
-                    ) if times_europeus else None,
-                    proximo_jogo_brasileiro_func=(
-                        lambda: obter_proximo_jogo_brasileirao(
-                            times_filtro=times_brasileiros
-                        )
-                    ) if times_brasileiros else None,
-                    state_key=f'{guild.id}:{canal_id}',
-                )
-            except Exception as error:
-                print(f"[LOOP] Falha ao verificar a resenha em {guild.name}: {error}")
-
-            if times_europeus:
+            async with _automatic_notifications_lock:
+                if canal_id not in _canais_configurados(
+                    guild_settings.get(str(guild.id), {})
+                ):
+                    continue
                 try:
-                    await verificar_partidas_europeias(
-                        bot, canal_id, times_europeus,
+                    await verificar_resenha(
+                        bot=bot,
+                        alert_channel_id=canal_id,
+                        rival_teams=times_brasileiros,
+                        european_teams=times_europeus,
+                        proximo_jogo_europeu_func=(
+                            lambda: obter_proximo_jogo_european_teams(
+                                times_filtro=times_europeus
+                            )
+                        ) if times_europeus else None,
+                        proximo_jogo_brasileiro_func=(
+                            lambda: obter_proximo_jogo_brasileirao(
+                                times_filtro=times_brasileiros
+                            )
+                        ) if times_brasileiros else None,
                         state_key=f'{guild.id}:{canal_id}',
                     )
                 except Exception as error:
-                    print(f"[LOOP] Falha ao monitorar a Europa em {guild.name}: {error}")
+                    print(f"[LOOP] Falha ao verificar a resenha em {guild.name}: {error}")
+
+                if times_europeus:
+                    try:
+                        await verificar_partidas_europeias(
+                            bot, canal_id, times_europeus,
+                            state_key=f'{guild.id}:{canal_id}',
+                        )
+                    except Exception as error:
+                        print(f"[LOOP] Falha ao monitorar a Europa em {guild.name}: {error}")
 
 
 # Inicialização: valida a credencial antes de conectar o cliente ao Discord.
