@@ -39,9 +39,12 @@ EUROPEAN_TEAMS = [
     "Tottenham",
     "Liverpool",
     "Arsenal",
+    "Porto",
+    "Benfica",
+    "Sporting CP",
 ]
 
-# Perfis Flashscore usados como referência para os 15 clubes do filtro europeu.
+# Perfis Flashscore usados como referência para os clubes do filtro europeu.
 EUROPEAN_TEAM_URLS = {
     "AC Milan": "https://www.flashscore.com/team/ac-milan/8Sa8HInO/",
     "Inter Milan": "https://www.flashscore.com/team/inter/Iw7eKK25/",
@@ -58,7 +61,13 @@ EUROPEAN_TEAM_URLS = {
     "Tottenham": "https://www.flashscore.com/team/tottenham/UDg08Ohm/",
     "Liverpool": "https://www.flashscore.com/team/liverpool/lId4TMwf/",
     "Arsenal": "https://www.flashscore.com/team/arsenal/hA1Zm19f/",
+    "Porto": "https://www.flashscore.com.br/equipe/fc-porto/S2NmScGp/",
+    "Benfica": "https://www.flashscore.com.br/equipe/benfica/zBkyuyRI/",
+    "Sporting CP": "https://www.flashscore.com.br/equipe/sporting-cp/tljXuHBC/",
 }
+
+BRAZIL_NATIONAL_TEAM = "Seleção Brasileira"
+BRAZIL_NATIONAL_TEAM_URL = "https://www.flashscore.com.br/equipe/brasil/I9l9aqLq/"
 
 # ALIASES DE CLUBES: reconhecem variações de grafia e abreviações retornadas pelos provedores.
 BRAZILIAN_TEAM_ALIASES = {
@@ -92,12 +101,16 @@ EUROPEAN_TEAM_ALIASES = {
     "Tottenham": ("Tottenham", "Tottenham Hotspur", "Spurs"),
     "Atletico Madrid": ("Atletico Madrid", "Atlético Madrid", "Atl. Madrid", "Atletico de Madrid", "Atleti"),
     "Borussia Dortmund": ("Borussia Dortmund", "Dortmund", "BVB"),
+    "Sporting CP": ("Sporting CP", "Sporting", "Sporting Clube de Portugal"),
     "Porto": ("Porto", "FC Porto", "Futebol Clube do Porto"),
     "Benfica": ("Benfica", "SL Benfica", "Sport Lisboa e Benfica"),
 }
 
 # Une os aliases em um único mapa consumido pelas funções de comparação de times.
 TEAM_ALIASES = {**BRAZILIAN_TEAM_ALIASES, **EUROPEAN_TEAM_ALIASES}
+TEAM_ALIASES[BRAZIL_NATIONAL_TEAM] = (
+    BRAZIL_NATIONAL_TEAM, "Brasil", "Brazil", "Brazil National Team"
+)
 
 # COMPETIÇÕES MONITORADAS: nomes normalizados que determinam a região de cada partida.
 SOUTH_AMERICAN_LEAGUES = {

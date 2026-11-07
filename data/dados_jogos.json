@@ -1,38 +1,5 @@
 [
     {
-        "id": "nDr51AQQ",
-        "mandante": "Bahia",
-        "visitante": "Sao Paulo",
-        "placar": "3 x 2",
-        "status": "28/10 — 21:30",
-        "tipo_status": "ENCERRADO",
-        "liga": "brasileirao serie a",
-        "data": "2026-10-28",
-        "hora": "21:30"
-    },
-    {
-        "id": "WpKydlll",
-        "mandante": "Remo",
-        "visitante": "Botafogo RJ",
-        "placar": "2 x 1",
-        "status": "28/10 — 21:30",
-        "tipo_status": "ENCERRADO",
-        "liga": "brasileirao serie a",
-        "data": "2026-10-28",
-        "hora": "21:30"
-    },
-    {
-        "id": "lbC4ct8e",
-        "mandante": "Atletico-MG",
-        "visitante": "Cruzeiro",
-        "placar": "0 x 1",
-        "status": "29/10 — 19:30",
-        "tipo_status": "ENCERRADO",
-        "liga": "brasileirao serie a",
-        "data": "2026-10-29",
-        "hora": "19:30"
-    },
-    {
         "id": "zenVrsg2",
         "mandante": "Vasco",
         "visitante": "Flamengo RJ",
@@ -135,9 +102,9 @@
         "id": "Q7uBAm3s",
         "mandante": "Palmeiras",
         "visitante": "Remo",
-        "placar": "x",
+        "placar": "6 x 1",
         "status": "05/11 — 19:30",
-        "tipo_status": "FUTURO",
+        "tipo_status": "ENCERRADO",
         "liga": "brasileirao serie a",
         "data": "2026-11-05",
         "hora": "19:30"
@@ -146,9 +113,9 @@
         "id": "vVoR6526",
         "mandante": "Cruzeiro",
         "visitante": "Bahia",
-        "placar": "x",
+        "placar": "3 x 2",
         "status": "05/11 — 21:30",
-        "tipo_status": "FUTURO",
+        "tipo_status": "ENCERRADO",
         "liga": "brasileirao serie a",
         "data": "2026-11-05",
         "hora": "21:30"
@@ -157,9 +124,9 @@
         "id": "YkfgAv9b",
         "mandante": "Vitoria",
         "visitante": "Fluminense",
-        "placar": "x",
+        "placar": "0 x 3",
         "status": "06/11 — 20:00",
-        "tipo_status": "FUTURO",
+        "tipo_status": "ENCERRADO",
         "liga": "brasileirao serie a",
         "data": "2026-11-06",
         "hora": "20:00"
@@ -275,25 +242,256 @@
         "hora": "16:30"
     },
     {
-        "id": "OC3zsWEj",
-        "mandante": "Salzburg",
-        "visitante": "AC Milan",
-        "placar": "0 x 4",
-        "status": "15/10 — 13:45",
+        "id": "G0RKkEnd",
+        "mandante": "Sporting",
+        "visitante": "Alverca",
+        "placar": "3 x 1",
+        "status": "22/08 — 16:30",
         "tipo_status": "ENCERRADO",
-        "liga": "europa league",
-        "data": "2026-10-15",
+        "liga": "portugal",
+        "data": "2026-08-22",
+        "hora": "16:30"
+    },
+    {
+        "id": "4buZ3476",
+        "mandante": "Rio Ave",
+        "visitante": "Sporting",
+        "placar": "0 x 4",
+        "status": "28/08 — 16:15",
+        "tipo_status": "ENCERRADO",
+        "liga": "portugal",
+        "data": "2026-08-28",
+        "hora": "16:15"
+    },
+    {
+        "id": "GKHEBe9F",
+        "mandante": "Académico Viseu",
+        "visitante": "Porto",
+        "placar": "0 x 3",
+        "status": "29/08 — 14:00",
+        "tipo_status": "ENCERRADO",
+        "liga": "portugal",
+        "data": "2026-08-29",
+        "hora": "14:00"
+    },
+    {
+        "id": "xCws2rxJ",
+        "mandante": "Benfica",
+        "visitante": "Estoril",
+        "placar": "2 x 1",
+        "status": "31/08 — 16:15",
+        "tipo_status": "ENCERRADO",
+        "liga": "portugal",
+        "data": "2026-08-31",
+        "hora": "16:15"
+    },
+    {
+        "id": "fVIEGsiC",
+        "mandante": "Porto",
+        "visitante": "Moreirense",
+        "placar": "2 x 1",
+        "status": "04/09 — 16:15",
+        "tipo_status": "ENCERRADO",
+        "liga": "portugal",
+        "data": "2026-09-04",
+        "hora": "16:15"
+    },
+    {
+        "id": "8EK6I3Ma",
+        "mandante": "Marítimo",
+        "visitante": "Benfica",
+        "placar": "0 x 3",
+        "status": "05/09 — 14:00",
+        "tipo_status": "ENCERRADO",
+        "liga": "portugal",
+        "data": "2026-09-05",
+        "hora": "14:00"
+    },
+    {
+        "id": "I7dWYO6t",
+        "mandante": "Sporting",
+        "visitante": "Nacional",
+        "placar": "2 x 0",
+        "status": "05/09 — 16:30",
+        "tipo_status": "ENCERRADO",
+        "liga": "portugal",
+        "data": "2026-09-05",
+        "hora": "16:30"
+    },
+    {
+        "id": "SYL9LRdk",
+        "mandante": "Porto",
+        "visitante": "Manchester City",
+        "placar": "0 x 2",
+        "status": "08/09 — 16:00",
+        "tipo_status": "ENCERRADO",
+        "liga": "portugal",
+        "data": "2026-09-08",
+        "hora": "16:00"
+    },
+    {
+        "id": "QaIiWiUj",
+        "mandante": "Sporting",
+        "visitante": "Galatasaray",
+        "placar": "3 x 1",
+        "status": "09/09 — 16:00",
+        "tipo_status": "ENCERRADO",
+        "liga": "portugal",
+        "data": "2026-09-09",
+        "hora": "16:00"
+    },
+    {
+        "id": "67ZYbIP9",
+        "mandante": "Moreirense",
+        "visitante": "Benfica",
+        "placar": "0 x 4",
+        "status": "09/09 — 16:45",
+        "tipo_status": "ENCERRADO",
+        "liga": "portugal",
+        "data": "2026-09-09",
+        "hora": "16:45"
+    },
+    {
+        "id": "8CeRsKkB",
+        "mandante": "Casa Pia",
+        "visitante": "Porto",
+        "placar": "1 x 4",
+        "status": "12/09 — 14:00",
+        "tipo_status": "ENCERRADO",
+        "liga": "portugal",
+        "data": "2026-09-12",
+        "hora": "14:00"
+    },
+    {
+        "id": "htF8sBeS",
+        "mandante": "Benfica",
+        "visitante": "Gil Vicente",
+        "placar": "3 x 1",
+        "status": "13/09 — 14:00",
+        "tipo_status": "ENCERRADO",
+        "liga": "portugal",
+        "data": "2026-09-13",
+        "hora": "14:00"
+    },
+    {
+        "id": "EBNbPBZq",
+        "mandante": "Famalicão",
+        "visitante": "Sporting",
+        "placar": "1 x 1",
+        "status": "13/09 — 16:30",
+        "tipo_status": "ENCERRADO",
+        "liga": "portugal",
+        "data": "2026-09-13",
+        "hora": "16:30"
+    },
+    {
+        "id": "Cz7KmSDF",
+        "mandante": "AC Milan",
+        "visitante": "Benfica",
+        "placar": "0 x 2",
+        "status": "16/09 — 16:00",
+        "tipo_status": "ENCERRADO",
+        "liga": "portugal",
+        "data": "2026-09-16",
+        "hora": "16:00"
+    },
+    {
+        "id": "Y9gDA9PE",
+        "mandante": "Sporting",
+        "visitante": "Arouca",
+        "placar": "2 x 2",
+        "status": "19/09 — 16:30",
+        "tipo_status": "ENCERRADO",
+        "liga": "portugal",
+        "data": "2026-09-19",
+        "hora": "16:30"
+    },
+    {
+        "id": "EeqKlS2e",
+        "mandante": "Porto",
+        "visitante": "Benfica",
+        "placar": "3 x 1",
+        "status": "20/09 — 16:30",
+        "tipo_status": "ENCERRADO",
+        "liga": "portugal",
+        "data": "2026-09-20",
+        "hora": "16:30"
+    },
+    {
+        "id": "Iqp7aqHD",
+        "mandante": "Braga",
+        "visitante": "Sporting",
+        "placar": "1 x 3",
+        "status": "09/10 — 16:15",
+        "tipo_status": "ENCERRADO",
+        "liga": "portugal",
+        "data": "2026-10-09",
+        "hora": "16:15"
+    },
+    {
+        "id": "SxMWF41f",
+        "mandante": "Marítimo",
+        "visitante": "Porto",
+        "placar": "1 x 2",
+        "status": "10/10 — 14:00",
+        "tipo_status": "ENCERRADO",
+        "liga": "portugal",
+        "data": "2026-10-10",
+        "hora": "14:00"
+    },
+    {
+        "id": "Sby8eIVo",
+        "mandante": "Benfica",
+        "visitante": "Vitória de Guimarães",
+        "placar": "2 x 0",
+        "status": "11/10 — 14:00",
+        "tipo_status": "ENCERRADO",
+        "liga": "portugal",
+        "data": "2026-10-11",
+        "hora": "14:00"
+    },
+    {
+        "id": "boMhjDLM",
+        "mandante": "Lens",
+        "visitante": "Sporting",
+        "placar": "0 x 2",
+        "status": "13/10 — 13:45",
+        "tipo_status": "ENCERRADO",
+        "liga": "portugal",
+        "data": "2026-10-13",
         "hora": "13:45"
     },
     {
-        "id": "hhghCah2",
-        "mandante": "Celta Vigo",
-        "visitante": "Juventus",
-        "placar": "1 x 2",
+        "id": "xt5Mx0jU",
+        "mandante": "Bétis",
+        "visitante": "Porto",
+        "placar": "3 x 2",
+        "status": "14/10 — 16:00",
+        "tipo_status": "ENCERRADO",
+        "liga": "portugal",
+        "data": "2026-10-14",
+        "hora": "16:00"
+    },
+    {
+        "id": "niOOqJCs",
+        "mandante": "Benfica",
+        "visitante": "Celtic",
+        "placar": "4 x 1",
         "status": "15/10 — 16:00",
         "tipo_status": "ENCERRADO",
-        "liga": "europa league",
+        "liga": "portugal",
         "data": "2026-10-15",
+        "hora": "16:00"
+    },
+    {
+        "id": "jP6EvMLH",
+        "mandante": "Porto",
+        "visitante": "PSV",
+        "placar": "0 x 1",
+        "status": "20/10 — 16:00",
+        "tipo_status": "ENCERRADO",
+        "liga": "portugal",
+        "data": "2026-10-20",
         "hora": "16:00"
     },
     {
@@ -330,6 +528,17 @@
         "hora": "16:00"
     },
     {
+        "id": "I7KxfeMc",
+        "mandante": "Sporting",
+        "visitante": "LASK",
+        "placar": "2 x 3",
+        "status": "21/10 — 16:00",
+        "tipo_status": "ENCERRADO",
+        "liga": "portugal",
+        "data": "2026-10-21",
+        "hora": "16:00"
+    },
+    {
         "id": "6FP4Yk94",
         "mandante": "Juventus",
         "visitante": "Rennes",
@@ -352,37 +561,15 @@
         "hora": "16:00"
     },
     {
-        "id": "lEVTjuAd",
-        "mandante": "Aston Villa",
-        "visitante": "Manchester City",
-        "placar": "2 x 1",
-        "status": "24/10 — 08:30",
+        "id": "YRSnvFtJ",
+        "mandante": "Omonia",
+        "visitante": "Benfica",
+        "placar": "1 x 4",
+        "status": "22/10 — 16:00",
         "tipo_status": "ENCERRADO",
-        "liga": "inglaterra",
-        "data": "2026-10-24",
-        "hora": "08:30"
-    },
-    {
-        "id": "G0XLh1up",
-        "mandante": "Arsenal",
-        "visitante": "Everton",
-        "placar": "2 x 0",
-        "status": "24/10 — 11:00",
-        "tipo_status": "ENCERRADO",
-        "liga": "inglaterra",
-        "data": "2026-10-24",
-        "hora": "11:00"
-    },
-    {
-        "id": "GKNFEr23",
-        "mandante": "Chelsea",
-        "visitante": "Tottenham",
-        "placar": "0 x 2",
-        "status": "24/10 — 13:30",
-        "tipo_status": "ENCERRADO",
-        "liga": "inglaterra",
-        "data": "2026-10-24",
-        "hora": "13:30"
+        "liga": "portugal",
+        "data": "2026-10-22",
+        "hora": "16:00"
     },
     {
         "id": "0IQ4B1NM",
@@ -394,6 +581,17 @@
         "liga": "alemanha",
         "data": "2026-10-24",
         "hora": "13:30"
+    },
+    {
+        "id": "Cns1phNp",
+        "mandante": "Gil Vicente",
+        "visitante": "Porto",
+        "placar": "0 x 1",
+        "status": "24/10 — 16:30",
+        "tipo_status": "ENCERRADO",
+        "liga": "portugal",
+        "data": "2026-10-24",
+        "hora": "16:30"
     },
     {
         "id": "t8xcEZ7K",
@@ -429,6 +627,28 @@
         "hora": "17:00"
     },
     {
+        "id": "QTwB2iqT",
+        "mandante": "Sporting",
+        "visitante": "Académico Viseu",
+        "placar": "1 x 2",
+        "status": "25/10 — 17:30",
+        "tipo_status": "ENCERRADO",
+        "liga": "portugal",
+        "data": "2026-10-25",
+        "hora": "17:30"
+    },
+    {
+        "id": "KWz34DEG",
+        "mandante": "Santa Clara",
+        "visitante": "Benfica",
+        "placar": "1 x 2",
+        "status": "26/10 — 15:45",
+        "tipo_status": "ENCERRADO",
+        "liga": "portugal",
+        "data": "2026-10-26",
+        "hora": "15:45"
+    },
+    {
         "id": "zyZq2xcL",
         "mandante": "PSG",
         "visitante": "Lyon",
@@ -440,37 +660,37 @@
         "hora": "16:30"
     },
     {
-        "id": "MwxmYTFj",
-        "mandante": "AC Milan",
-        "visitante": "Bologna",
-        "placar": "2 x 4",
-        "status": "28/10 — 14:30",
+        "id": "8KinOUmR",
+        "mandante": "Sporting",
+        "visitante": "Marítimo",
+        "placar": "2 x 1",
+        "status": "27/10 — 17:15",
         "tipo_status": "ENCERRADO",
-        "liga": "italia",
-        "data": "2026-10-28",
-        "hora": "14:30"
+        "liga": "portugal",
+        "data": "2026-10-27",
+        "hora": "17:15"
     },
     {
-        "id": "QRMD8Ai3",
-        "mandante": "Venezia",
-        "visitante": "Inter",
-        "placar": "0 x 2",
-        "status": "28/10 — 14:30",
+        "id": "801h2mR7",
+        "mandante": "Porto",
+        "visitante": "Académico Viseu",
+        "placar": "1 x 0",
+        "status": "28/10 — 17:30",
         "tipo_status": "ENCERRADO",
-        "liga": "italia",
+        "liga": "portugal",
         "data": "2026-10-28",
-        "hora": "14:30"
+        "hora": "17:30"
     },
     {
-        "id": "I7AFjxWH",
-        "mandante": "Genoa",
-        "visitante": "Juventus",
-        "placar": "2 x 0",
-        "status": "28/10 — 16:45",
+        "id": "0flvQjJE",
+        "mandante": "Benfica",
+        "visitante": "Gil Vicente",
+        "placar": "4 x 1",
+        "status": "29/10 — 17:45",
         "tipo_status": "ENCERRADO",
-        "liga": "italia",
-        "data": "2026-10-28",
-        "hora": "16:45"
+        "liga": "portugal",
+        "data": "2026-10-29",
+        "hora": "17:45"
     },
     {
         "id": "ncRVhYJ7",
@@ -482,6 +702,17 @@
         "liga": "franca",
         "data": "2026-10-30",
         "hora": "15:00"
+    },
+    {
+        "id": "vJ4EBULq",
+        "mandante": "Casa Pia",
+        "visitante": "Sporting",
+        "placar": "0 x 2",
+        "status": "30/10 — 17:15",
+        "tipo_status": "ENCERRADO",
+        "liga": "portugal",
+        "data": "2026-10-30",
+        "hora": "17:15"
     },
     {
         "id": "OWc65atm",
@@ -561,6 +792,17 @@
         "hora": "17:00"
     },
     {
+        "id": "vBGNTTsS",
+        "mandante": "Porto",
+        "visitante": "Estoril",
+        "placar": "4 x 0",
+        "status": "31/10 — 17:30",
+        "tipo_status": "ENCERRADO",
+        "liga": "portugal",
+        "data": "2026-10-31",
+        "hora": "17:30"
+    },
+    {
         "id": "v7xU0FlU",
         "mandante": "Racing Santander",
         "visitante": "Real Madrid",
@@ -592,6 +834,28 @@
         "liga": "italia",
         "data": "2026-11-01",
         "hora": "16:45"
+    },
+    {
+        "id": "zs2gO75k",
+        "mandante": "Benfica",
+        "visitante": "Alverca",
+        "placar": "1 x 0",
+        "status": "02/11 — 17:15",
+        "tipo_status": "ENCERRADO",
+        "liga": "portugal",
+        "data": "2026-11-02",
+        "hora": "17:15"
+    },
+    {
+        "id": "QXNphZjA",
+        "mandante": "Shakhtar",
+        "visitante": "Sporting",
+        "placar": "0 x 1",
+        "status": "03/11 — 14:45",
+        "tipo_status": "ENCERRADO",
+        "liga": "portugal",
+        "data": "2026-11-03",
+        "hora": "14:45"
     },
     {
         "id": "vg7E1ClJ",
@@ -671,6 +935,17 @@
         "hora": "17:00"
     },
     {
+        "id": "6Zinb7I7",
+        "mandante": "Porto",
+        "visitante": "Napoli",
+        "placar": "4 x 1",
+        "status": "04/11 — 17:00",
+        "tipo_status": "ENCERRADO",
+        "liga": "portugal",
+        "data": "2026-11-04",
+        "hora": "17:00"
+    },
+    {
         "id": "YVOHJ5R1",
         "mandante": "RB Leipzig",
         "visitante": "Manchester City",
@@ -704,15 +979,26 @@
         "hora": "14:45"
     },
     {
-        "id": "A72E8Phd",
-        "mandante": "Leeds",
-        "visitante": "Tottenham",
-        "placar": "x",
-        "status": "07/11 — 09:30",
-        "tipo_status": "FUTURO",
-        "liga": "inglaterra",
-        "data": "2026-11-07",
-        "hora": "09:30"
+        "id": "thdi2RS8",
+        "mandante": "AZ Alkmaar",
+        "visitante": "Juventus",
+        "placar": "1 x 2",
+        "status": "05/11 — 17:00",
+        "tipo_status": "ENCERRADO",
+        "liga": "europa league",
+        "data": "2026-11-05",
+        "hora": "17:00"
+    },
+    {
+        "id": "Q1PvtyC6",
+        "mandante": "Benfica",
+        "visitante": "Lech",
+        "placar": "3 x 1",
+        "status": "05/11 — 17:00",
+        "tipo_status": "ENCERRADO",
+        "liga": "portugal",
+        "data": "2026-11-05",
+        "hora": "17:00"
     },
     {
         "id": "tYyhXx1t",
@@ -781,6 +1067,17 @@
         "hora": "17:05"
     },
     {
+        "id": "4G20vKem",
+        "mandante": "Sporting",
+        "visitante": "Moreirense",
+        "placar": "x",
+        "status": "07/11 — 17:30",
+        "tipo_status": "FUTURO",
+        "liga": "portugal",
+        "data": "2026-11-07",
+        "hora": "17:30"
+    },
+    {
         "id": "MFkKOMs1",
         "mandante": "Genoa",
         "visitante": "AC Milan",
@@ -825,6 +1122,17 @@
         "hora": "14:00"
     },
     {
+        "id": "xU08xbQa",
+        "mandante": "Vitória de Guimarães",
+        "visitante": "Porto",
+        "placar": "x",
+        "status": "08/11 — 15:00",
+        "tipo_status": "FUTURO",
+        "liga": "portugal",
+        "data": "2026-11-08",
+        "hora": "15:00"
+    },
+    {
         "id": "l2iCQrDl",
         "mandante": "Fiorentina",
         "visitante": "Juventus",
@@ -847,6 +1155,17 @@
         "hora": "17:00"
     },
     {
+        "id": "ADcmpkS8",
+        "mandante": "Estrela da Amadora",
+        "visitante": "Benfica",
+        "placar": "x",
+        "status": "08/11 — 17:30",
+        "tipo_status": "FUTURO",
+        "liga": "portugal",
+        "data": "2026-11-08",
+        "hora": "17:30"
+    },
+    {
         "id": "zZPQYkxo",
         "mandante": "Bayern Munich",
         "visitante": "FC Koln",
@@ -856,6 +1175,17 @@
         "liga": "alemanha",
         "data": "2026-11-20",
         "hora": "16:30"
+    },
+    {
+        "id": "f70hE276",
+        "mandante": "Porto",
+        "visitante": "Paredes",
+        "placar": "x",
+        "status": "20/11 — 17:45",
+        "tipo_status": "FUTURO",
+        "liga": "portugal",
+        "data": "2026-11-20",
+        "hora": "17:45"
     },
     {
         "id": "MuVKeqEE",
@@ -924,6 +1254,17 @@
         "hora": "14:30"
     },
     {
+        "id": "pvvYQuiC",
+        "mandante": "Sporting",
+        "visitante": "União da Serra",
+        "placar": "x",
+        "status": "21/11 — 15:00",
+        "tipo_status": "FUTURO",
+        "liga": "portugal",
+        "data": "2026-11-21",
+        "hora": "15:00"
+    },
+    {
         "id": "QweLd3hK",
         "mandante": "Real Madrid",
         "visitante": "Celta Vigo",
@@ -944,6 +1285,17 @@
         "liga": "italia",
         "data": "2026-11-22",
         "hora": "08:30"
+    },
+    {
+        "id": "lKKgMMG7",
+        "mandante": "Barcelona",
+        "visitante": "Villarreal",
+        "placar": "x",
+        "status": "22/11 — 10:00",
+        "tipo_status": "FUTURO",
+        "liga": "espanha",
+        "data": "2026-11-22",
+        "hora": "10:00"
     },
     {
         "id": "UorZXuM7",
@@ -979,6 +1331,28 @@
         "hora": "16:45"
     },
     {
+        "id": "GQCupQ8E",
+        "mandante": "Getafe",
+        "visitante": "Atl. Madrid",
+        "placar": "x",
+        "status": "22/11 — 17:00",
+        "tipo_status": "FUTURO",
+        "liga": "espanha",
+        "data": "2026-11-22",
+        "hora": "17:00"
+    },
+    {
+        "id": "riuJCkW1",
+        "mandante": "Torreense",
+        "visitante": "Benfica",
+        "placar": "x",
+        "status": "22/11 — 17:45",
+        "tipo_status": "FUTURO",
+        "liga": "portugal",
+        "data": "2026-11-22",
+        "hora": "17:45"
+    },
+    {
         "id": "vPVzwlTF",
         "mandante": "Arsenal",
         "visitante": "Dortmund",
@@ -986,6 +1360,17 @@
         "status": "24/11 — 17:00",
         "tipo_status": "FUTURO",
         "liga": "champions league",
+        "data": "2026-11-24",
+        "hora": "17:00"
+    },
+    {
+        "id": "6grtKluR",
+        "mandante": "Feyenoord",
+        "visitante": "Porto",
+        "placar": "x",
+        "status": "24/11 — 17:00",
+        "tipo_status": "FUTURO",
+        "liga": "portugal",
         "data": "2026-11-24",
         "hora": "17:00"
     },
@@ -1078,6 +1463,17 @@
         "hora": "17:00"
     },
     {
+        "id": "CEDJzDKq",
+        "mandante": "Sporting",
+        "visitante": "Manchester Utd",
+        "placar": "x",
+        "status": "25/11 — 17:00",
+        "tipo_status": "FUTURO",
+        "liga": "portugal",
+        "data": "2026-11-25",
+        "hora": "17:00"
+    },
+    {
         "id": "jo8KhEeC",
         "mandante": "Olympiacos Piraeus",
         "visitante": "AC Milan",
@@ -1085,6 +1481,17 @@
         "status": "26/11 — 14:45",
         "tipo_status": "FUTURO",
         "liga": "europa league",
+        "data": "2026-11-26",
+        "hora": "14:45"
+    },
+    {
+        "id": "hlRWscsf",
+        "mandante": "Plzen",
+        "visitante": "Benfica",
+        "placar": "x",
+        "status": "26/11 — 14:45",
+        "tipo_status": "FUTURO",
+        "liga": "portugal",
         "data": "2026-11-26",
         "hora": "14:45"
     },
@@ -1097,6 +1504,72 @@
         "tipo_status": "FUTURO",
         "liga": "europa league",
         "data": "2026-11-26",
+        "hora": "17:00"
+    },
+    {
+        "id": "U103og9U",
+        "mandante": "Porto",
+        "visitante": "Sporting",
+        "placar": "x",
+        "status": "29/11 — 17:30",
+        "tipo_status": "FUTURO",
+        "liga": "portugal",
+        "data": "2026-11-29",
+        "hora": "17:30"
+    },
+    {
+        "id": "IcuD5dfn",
+        "mandante": "Benfica",
+        "visitante": "Famalicão",
+        "placar": "x",
+        "status": "30/11 — 17:15",
+        "tipo_status": "FUTURO",
+        "liga": "portugal",
+        "data": "2026-11-30",
+        "hora": "17:15"
+    },
+    {
+        "id": "v9iZHQq9",
+        "mandante": "Sporting",
+        "visitante": "Marítimo",
+        "placar": "x",
+        "status": "04/12 — 17:15",
+        "tipo_status": "FUTURO",
+        "liga": "portugal",
+        "data": "2026-12-04",
+        "hora": "17:15"
+    },
+    {
+        "id": "l8K8EiwH",
+        "mandante": "Nacional",
+        "visitante": "Benfica",
+        "placar": "x",
+        "status": "05/12 — 12:30",
+        "tipo_status": "FUTURO",
+        "liga": "portugal",
+        "data": "2026-12-05",
+        "hora": "12:30"
+    },
+    {
+        "id": "nF4mfNi2",
+        "mandante": "Santa Clara",
+        "visitante": "Porto",
+        "placar": "x",
+        "status": "05/12 — 15:00",
+        "tipo_status": "FUTURO",
+        "liga": "portugal",
+        "data": "2026-12-05",
+        "hora": "15:00"
+    },
+    {
+        "id": "0Irves6b",
+        "mandante": "AS Roma",
+        "visitante": "Sporting",
+        "placar": "x",
+        "status": "08/12 — 17:00",
+        "tipo_status": "FUTURO",
+        "liga": "portugal",
+        "data": "2026-12-08",
         "hora": "17:00"
     },
     {
@@ -1133,6 +1606,17 @@
         "hora": "17:00"
     },
     {
+        "id": "dpzlSWEc",
+        "mandante": "Liverpool",
+        "visitante": "Porto",
+        "placar": "x",
+        "status": "09/12 — 17:00",
+        "tipo_status": "FUTURO",
+        "liga": "portugal",
+        "data": "2026-12-09",
+        "hora": "17:00"
+    },
+    {
         "id": "hQboYtFL",
         "mandante": "H. Beer Sheva",
         "visitante": "Juventus",
@@ -1153,5 +1637,390 @@
         "liga": "europa league",
         "data": "2026-12-10",
         "hora": "17:00"
+    },
+    {
+        "id": "0YKY1IYP",
+        "mandante": "Benfica",
+        "visitante": "OFI Crete",
+        "placar": "x",
+        "status": "10/12 — 17:00",
+        "tipo_status": "FUTURO",
+        "liga": "portugal",
+        "data": "2026-12-10",
+        "hora": "17:00"
+    },
+    {
+        "id": "xnrT60y8",
+        "mandante": "Gil Vicente",
+        "visitante": "Sporting",
+        "placar": "x",
+        "status": "12/12 — 17:30",
+        "tipo_status": "FUTURO",
+        "liga": "portugal",
+        "data": "2026-12-12",
+        "hora": "17:30"
+    },
+    {
+        "id": "AHBj7Unl",
+        "mandante": "Porto",
+        "visitante": "Estrela da Amadora",
+        "placar": "x",
+        "status": "13/12 — 17:30",
+        "tipo_status": "FUTURO",
+        "liga": "portugal",
+        "data": "2026-12-13",
+        "hora": "17:30"
+    },
+    {
+        "id": "GEEb58H0",
+        "mandante": "Benfica",
+        "visitante": "Braga",
+        "placar": "x",
+        "status": "14/12 — 17:15",
+        "tipo_status": "FUTURO",
+        "liga": "portugal",
+        "data": "2026-12-14",
+        "hora": "17:15"
+    },
+    {
+        "id": "0MAoGPVI",
+        "mandante": "Famalicão",
+        "visitante": "Porto",
+        "placar": "x",
+        "status": "20/12 — 13:00",
+        "tipo_status": "FUTURO",
+        "liga": "portugal",
+        "data": "2026-12-20",
+        "hora": "13:00"
+    },
+    {
+        "id": "Obl3Y6om",
+        "mandante": "Rio Ave",
+        "visitante": "Benfica",
+        "placar": "x",
+        "status": "20/12 — 13:00",
+        "tipo_status": "FUTURO",
+        "liga": "portugal",
+        "data": "2026-12-20",
+        "hora": "13:00"
+    },
+    {
+        "id": "29kJUOpC",
+        "mandante": "Sporting",
+        "visitante": "Estoril",
+        "placar": "x",
+        "status": "20/12 — 13:00",
+        "tipo_status": "FUTURO",
+        "liga": "portugal",
+        "data": "2026-12-20",
+        "hora": "13:00"
+    },
+    {
+        "id": "bueWOgEj",
+        "mandante": "Porto",
+        "visitante": "Nacional",
+        "placar": "x",
+        "status": "27/12 — 13:00",
+        "tipo_status": "FUTURO",
+        "liga": "portugal",
+        "data": "2026-12-27",
+        "hora": "13:00"
+    },
+    {
+        "id": "Ig5PpyyA",
+        "mandante": "Benfica",
+        "visitante": "Sporting",
+        "placar": "x",
+        "status": "27/12 — 13:00",
+        "tipo_status": "FUTURO",
+        "liga": "portugal",
+        "data": "2026-12-27",
+        "hora": "13:00"
+    },
+    {
+        "id": "p8XsLWjL",
+        "mandante": "Porto",
+        "visitante": "Benfica",
+        "placar": "x",
+        "status": "05/01 — 17:15",
+        "tipo_status": "FUTURO",
+        "liga": "portugal",
+        "data": "2027-01-05",
+        "hora": "17:15"
+    },
+    {
+        "id": "nLZZqqkA",
+        "mandante": "Sporting",
+        "visitante": "Famalicão",
+        "placar": "x",
+        "status": "06/01 — 17:15",
+        "tipo_status": "FUTURO",
+        "liga": "portugal",
+        "data": "2027-01-06",
+        "hora": "17:15"
+    },
+    {
+        "id": "GjnDehkS",
+        "mandante": "Braga",
+        "visitante": "Porto",
+        "placar": "x",
+        "status": "10/01 — 13:00",
+        "tipo_status": "FUTURO",
+        "liga": "portugal",
+        "data": "2027-01-10",
+        "hora": "13:00"
+    },
+    {
+        "id": "8Qr5cEKF",
+        "mandante": "Arouca",
+        "visitante": "Benfica",
+        "placar": "x",
+        "status": "10/01 — 13:00",
+        "tipo_status": "FUTURO",
+        "liga": "portugal",
+        "data": "2027-01-10",
+        "hora": "13:00"
+    },
+    {
+        "id": "IwRpAi4L",
+        "mandante": "Sporting",
+        "visitante": "Santa Clara",
+        "placar": "x",
+        "status": "10/01 — 13:00",
+        "tipo_status": "FUTURO",
+        "liga": "portugal",
+        "data": "2027-01-10",
+        "hora": "13:00"
+    },
+    {
+        "id": "0Koc4MXa",
+        "mandante": "Alverca",
+        "visitante": "Porto",
+        "placar": "x",
+        "status": "17/01 — 13:00",
+        "tipo_status": "FUTURO",
+        "liga": "portugal",
+        "data": "2027-01-17",
+        "hora": "13:00"
+    },
+    {
+        "id": "EshD0vXO",
+        "mandante": "Académico Viseu",
+        "visitante": "Benfica",
+        "placar": "x",
+        "status": "17/01 — 13:00",
+        "tipo_status": "FUTURO",
+        "liga": "portugal",
+        "data": "2027-01-17",
+        "hora": "13:00"
+    },
+    {
+        "id": "lMHG4VRr",
+        "mandante": "Sporting",
+        "visitante": "Estrela da Amadora",
+        "placar": "x",
+        "status": "17/01 — 13:00",
+        "tipo_status": "FUTURO",
+        "liga": "portugal",
+        "data": "2027-01-17",
+        "hora": "13:00"
+    },
+    {
+        "id": "YupYLAAE",
+        "mandante": "Porto",
+        "visitante": "Slavia Praga",
+        "placar": "x",
+        "status": "19/01 — 17:00",
+        "tipo_status": "FUTURO",
+        "liga": "portugal",
+        "data": "2027-01-19",
+        "hora": "17:00"
+    },
+    {
+        "id": "p6Gmjw2t",
+        "mandante": "Sporting",
+        "visitante": "Barcelona",
+        "placar": "x",
+        "status": "20/01 — 17:00",
+        "tipo_status": "FUTURO",
+        "liga": "portugal",
+        "data": "2027-01-20",
+        "hora": "17:00"
+    },
+    {
+        "id": "d464dddm",
+        "mandante": "Nijmegen",
+        "visitante": "Benfica",
+        "placar": "x",
+        "status": "21/01 — 14:45",
+        "tipo_status": "FUTURO",
+        "liga": "portugal",
+        "data": "2027-01-21",
+        "hora": "14:45"
+    },
+    {
+        "id": "WbBoTNBE",
+        "mandante": "Brasil",
+        "visitante": "Tunísia",
+        "placar": "1 x 1",
+        "status": "18/11 — 16:30",
+        "tipo_status": "ENCERRADO",
+        "liga": "selecao brasileira",
+        "data": "2025-11-18",
+        "hora": "16:30"
+    },
+    {
+        "id": "few9ITN7",
+        "mandante": "Brasil",
+        "visitante": "França",
+        "placar": "1 x 2",
+        "status": "26/03 — 17:00",
+        "tipo_status": "ENCERRADO",
+        "liga": "selecao brasileira",
+        "data": "2026-03-26",
+        "hora": "17:00"
+    },
+    {
+        "id": "A3LetXFE",
+        "mandante": "Brasil",
+        "visitante": "Croácia",
+        "placar": "3 x 1",
+        "status": "31/03 — 21:00",
+        "tipo_status": "ENCERRADO",
+        "liga": "selecao brasileira",
+        "data": "2026-03-31",
+        "hora": "21:00"
+    },
+    {
+        "id": "4UXzDy1d",
+        "mandante": "Brasil",
+        "visitante": "Panamá",
+        "placar": "6 x 2",
+        "status": "31/05 — 18:30",
+        "tipo_status": "ENCERRADO",
+        "liga": "selecao brasileira",
+        "data": "2026-05-31",
+        "hora": "18:30"
+    },
+    {
+        "id": "r3s2pV84",
+        "mandante": "Brasil",
+        "visitante": "Egito",
+        "placar": "2 x 1",
+        "status": "06/06 — 19:00",
+        "tipo_status": "ENCERRADO",
+        "liga": "selecao brasileira",
+        "data": "2026-06-06",
+        "hora": "19:00"
+    },
+    {
+        "id": "b5JayTEd",
+        "mandante": "Brasil",
+        "visitante": "Marrocos",
+        "placar": "1 x 1",
+        "status": "13/06 — 19:00",
+        "tipo_status": "ENCERRADO",
+        "liga": "selecao brasileira",
+        "data": "2026-06-13",
+        "hora": "19:00"
+    },
+    {
+        "id": "IRyRv2Ll",
+        "mandante": "Brasil",
+        "visitante": "Haiti",
+        "placar": "3 x 0",
+        "status": "19/06 — 21:30",
+        "tipo_status": "ENCERRADO",
+        "liga": "selecao brasileira",
+        "data": "2026-06-19",
+        "hora": "21:30"
+    },
+    {
+        "id": "EgVZxtj1",
+        "mandante": "Escócia",
+        "visitante": "Brasil",
+        "placar": "0 x 3",
+        "status": "24/06 — 19:00",
+        "tipo_status": "ENCERRADO",
+        "liga": "selecao brasileira",
+        "data": "2026-06-24",
+        "hora": "19:00"
+    },
+    {
+        "id": "f7ENGzPc",
+        "mandante": "Brasil",
+        "visitante": "Japão",
+        "placar": "2 x 1",
+        "status": "29/06 — 14:00",
+        "tipo_status": "ENCERRADO",
+        "liga": "selecao brasileira",
+        "data": "2026-06-29",
+        "hora": "14:00"
+    },
+    {
+        "id": "tpOhKWcC",
+        "mandante": "Brasil",
+        "visitante": "Noruega",
+        "placar": "1 x 2",
+        "status": "05/07 — 17:00",
+        "tipo_status": "ENCERRADO",
+        "liga": "selecao brasileira",
+        "data": "2026-07-05",
+        "hora": "17:00"
+    },
+    {
+        "id": "8EY6ZJpI",
+        "mandante": "Austrália",
+        "visitante": "Brasil",
+        "placar": "1 x 1",
+        "status": "25/09 — 07:00",
+        "tipo_status": "ENCERRADO",
+        "liga": "selecao brasileira",
+        "data": "2026-09-25",
+        "hora": "07:00"
+    },
+    {
+        "id": "GvxFXcFU",
+        "mandante": "Austrália",
+        "visitante": "Brasil",
+        "placar": "2 x 4",
+        "status": "29/09 — 07:00",
+        "tipo_status": "ENCERRADO",
+        "liga": "selecao brasileira",
+        "data": "2026-09-29",
+        "hora": "07:00"
+    },
+    {
+        "id": "rTGQFX7E",
+        "mandante": "Índia",
+        "visitante": "Brasil",
+        "placar": "0 x 4",
+        "status": "03/10 — 11:00",
+        "tipo_status": "ENCERRADO",
+        "liga": "selecao brasileira",
+        "data": "2026-10-03",
+        "hora": "11:00"
+    },
+    {
+        "id": "UHpKugvm",
+        "mandante": "Japão",
+        "visitante": "Brasil",
+        "placar": "x",
+        "status": "14/11 — 07:15",
+        "tipo_status": "FUTURO",
+        "liga": "selecao brasileira",
+        "data": "2026-11-14",
+        "hora": "07:15"
+    },
+    {
+        "id": "xrlSwX8a",
+        "mandante": "Singapura",
+        "visitante": "Brasil",
+        "placar": "x",
+        "status": "17/11 — 07:00",
+        "tipo_status": "FUTURO",
+        "liga": "selecao brasileira",
+        "data": "2026-11-17",
+        "hora": "07:00"
     }
 ]

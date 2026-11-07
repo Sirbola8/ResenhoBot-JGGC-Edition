@@ -10,6 +10,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from config import (
+    BRAZIL_NATIONAL_TEAM,
     BRAZILIAN_TEAMS,
     CHECK_INTERVAL,
     EUROPEAN_TEAMS,
@@ -55,6 +56,11 @@ GUILD_SETTINGS_PATH = os.path.join(
     os.path.dirname(__file__), 'data', 'monitoramento_servidores.json'
 )
 FUSO_BRASIL = pytz.timezone('America/Sao_Paulo')
+_aviso_selecao_verificado_nesta_execucao = False
+AVISO_SELECAO_BRASILEIRA = (
+    'data fifa ta chegando cambada de chupa engole, preparem-se pra sofrer '
+    'com a seleção bostileira mais uma vez kkkkk:shit::flag_br:'
+)
 
 
 def _carregar_configuracoes_servidores():
@@ -375,6 +381,54 @@ def _times_do_servidor(guild_id, regiao=None):
     if regiao == 'europa':
         return [time for time in times if time in EUROPEAN_TEAMS]
     return list(times)
+
+
+def _canais_configurados(configuracao):
+    """Aceita tanto um canal quanto a lista de canais salva nas configurações."""
+    ids = configuracao.get('channel_id') or []
+    if not isinstance(ids, (list, tuple, set)):
+        ids = [ids]
+    canais = []
+    for canal_id in ids:
+        try:
+            canal_id = int(canal_id)
+        except (TypeError, ValueError):
+            continue
+        if canal_id and canal_id not in canais:
+            canais.append(canal_id)
+    return canais
+
+
+def _jogos_selecao_registrados():
+    """Retorna os registros envolvendo a Seleção, sem depender do nome da competição."""
+    try:
+        with open(DATA_PATH, 'r', encoding='utf-8') as arquivo:
+            jogos = json.load(arquivo)
+    except (OSError, json.JSONDecodeError):
+        return []
+    if not isinstance(jogos, list):
+        return []
+    registrados = [
+        jogo for jogo in jogos
+        if isinstance(jogo, dict) and any(
+            time_corresponde(jogo.get(lado, ''), BRAZIL_NATIONAL_TEAM)
+            for lado in ('mandante', 'visitante')
+        )
+    ]
+    return sorted(
+        registrados,
+        key=lambda jogo: (str(jogo.get('data', '')), str(jogo.get('hora', ''))),
+    )
+
+
+def _inicio_jogo_selecao(jogo):
+    try:
+        inicio = datetime.datetime.strptime(
+            f"{jogo.get('data', '')} {jogo.get('hora', '')}", '%Y-%m-%d %H:%M'
+        )
+    except (TypeError, ValueError):
+        return None
+    return FUSO_BRASIL.localize(inicio)
 
 
 async def _exigir_configuracao_servidor(ctx):
@@ -1056,6 +1110,42 @@ async def ajuda(ctx):
     # Envia a mensagem de ajuda no canal
     await ctx.send(help_text)
 
+
+# !datafifa / !df: publica o aviso de data FIFA sob demanda.
+@bot.command(aliases=['df'])
+async def datafifa(ctx):
+    await ctx.send(AVISO_SELECAO_BRASILEIRA)
+
+
+# !selecao e apelidos: lista as partidas da Seleção registradas na coleta do Flashscore.
+@bot.command(aliases=[
+    'seleção', 'seleçãocanarinho', 'seleçãocararinho',
+    'canarinho', 'seleçãobostileira',
+])
+async def selecao(ctx):
+    jogos = _jogos_selecao_registrados()
+    if not jogos:
+        await ctx.send('sem jogo da seleção por enquanto...GRAÇAS A DEUS!!')
+        return
+
+    linhas = ['**Jogos registrados da Seleção Brasileira:**']
+    for jogo in jogos[-20:]:
+        inicio = _inicio_jogo_selecao(jogo)
+        data_hora = inicio.strftime('%d/%m/%Y às %H:%M') if inicio else 'Data não informada'
+        mandante = str(jogo.get('mandante', '?'))
+        visitante = str(jogo.get('visitante', '?'))
+        status = str(jogo.get('tipo_status', '')).upper()
+        placar = str(jogo.get('placar', 'x')).strip()
+        resumo = f' · **{placar}**' if placar and placar.casefold() != 'x' else ''
+        situacao = ' · encerrado' if status == 'ENCERRADO' else (
+            ' · ao vivo' if status == 'AO_VIVO' else ''
+        )
+        linhas.append(f'• {data_hora} — {mandante} x {visitante}{resumo}{situacao}')
+
+    mensagem = '\n'.join(linhas)
+    for inicio in range(0, len(mensagem), 1900):
+        await ctx.send(mensagem[inicio:inicio + 1900])
+
 # !jogos / !jogoshoje: consulta os jogos de hoje dos times que este servidor escolheu monitorar.
 @bot.command(aliases=['jogoshoje'])
 async def jogos(ctx):
@@ -1160,6 +1250,7 @@ async def jogosliberta(ctx):
 # MONITORAMENTO: atualiza os dados globais; os avisos automáticos abaixo respeitam o filtro de cada servidor.
 @tasks.loop(seconds=CHECK_INTERVAL)
 async def monitoring_loop():
+    global _aviso_selecao_verificado_nesta_execucao
     loop = asyncio.get_running_loop()
     try:
         await loop.run_in_executor(None, atualizar_arquivo)
@@ -1181,48 +1272,81 @@ async def monitoring_loop():
     except Exception as error:
         print(f"[PARTIDA] Falha ao atualizar detalhes dos jogos ativos: {error}")
 
+    # O aviso é avaliado uma vez por inicialização e enviado a cada canal configurado.
+    if not _aviso_selecao_verificado_nesta_execucao:
+        try:
+            agora = datetime.datetime.now(FUSO_BRASIL)
+            proximos = [
+                inicio
+                for jogo in _jogos_selecao_registrados()
+                if str(jogo.get('tipo_status', '')).upper() == 'FUTURO'
+                and (inicio := _inicio_jogo_selecao(jogo)) is not None
+                and inicio > agora
+            ]
+            if proximos:
+                horas_restantes = (min(proximos) - agora).total_seconds() / 3600
+                if horas_restantes < 168:
+                    _aviso_selecao_verificado_nesta_execucao = True
+                    for guild in bot.guilds:
+                        configuracao = guild_settings.get(str(guild.id), {})
+                        if not configuracao.get('initialized'):
+                            continue
+                        for canal_id in _canais_configurados(configuracao):
+                            canal = bot.get_channel(canal_id)
+                            if canal is None:
+                                try:
+                                    canal = await bot.fetch_channel(canal_id)
+                                except discord.HTTPException:
+                                    continue
+                            try:
+                                await canal.send(AVISO_SELECAO_BRASILEIRA)
+                            except discord.HTTPException as error:
+                                print(f'[SELEÇÃO] Falha ao enviar aviso em {canal_id}: {error}')
+                _aviso_selecao_verificado_nesta_execucao = True
+        except Exception as error:
+            print(f'[SELEÇÃO] Não foi possível avaliar o aviso de data FIFA: {error}')
+
     # Cada servidor recebe alertas apenas dos clubes que selecionou para monitoramento.
     for guild in bot.guilds:
         configuracao = guild_settings.get(str(guild.id), {})
         if not configuracao.get('initialized'):
             continue
-        try:
-            canal_id = int(configuracao.get('channel_id') or 0)
-        except (TypeError, ValueError):
-            canal_id = 0
-        if not canal_id:
+        canais_ids = _canais_configurados(configuracao)
+        if not canais_ids:
             continue
 
         times_brasileiros = _times_do_servidor(guild.id, 'brasil')
         times_europeus = _times_do_servidor(guild.id, 'europa')
-        try:
-            await verificar_resenha(
-                bot=bot,
-                alert_channel_id=canal_id,
-                rival_teams=times_brasileiros,
-                european_teams=times_europeus,
-                proximo_jogo_europeu_func=(
-                    lambda: obter_proximo_jogo_european_teams(
-                        times_filtro=times_europeus
-                    )
-                ) if times_europeus else None,
-                proximo_jogo_brasileiro_func=(
-                    lambda: obter_proximo_jogo_brasileirao(
-                        times_filtro=times_brasileiros
-                    )
-                ) if times_brasileiros else None,
-                state_key=guild.id,
-            )
-        except Exception as error:
-            print(f"[LOOP] Falha ao verificar a resenha em {guild.name}: {error}")
-
-        if times_europeus:
+        for canal_id in canais_ids:
             try:
-                await verificar_partidas_europeias(
-                    bot, canal_id, times_europeus, state_key=guild.id
+                await verificar_resenha(
+                    bot=bot,
+                    alert_channel_id=canal_id,
+                    rival_teams=times_brasileiros,
+                    european_teams=times_europeus,
+                    proximo_jogo_europeu_func=(
+                        lambda: obter_proximo_jogo_european_teams(
+                            times_filtro=times_europeus
+                        )
+                    ) if times_europeus else None,
+                    proximo_jogo_brasileiro_func=(
+                        lambda: obter_proximo_jogo_brasileirao(
+                            times_filtro=times_brasileiros
+                        )
+                    ) if times_brasileiros else None,
+                    state_key=f'{guild.id}:{canal_id}',
                 )
             except Exception as error:
-                print(f"[LOOP] Falha ao monitorar a Europa em {guild.name}: {error}")
+                print(f"[LOOP] Falha ao verificar a resenha em {guild.name}: {error}")
+
+            if times_europeus:
+                try:
+                    await verificar_partidas_europeias(
+                        bot, canal_id, times_europeus,
+                        state_key=f'{guild.id}:{canal_id}',
+                    )
+                except Exception as error:
+                    print(f"[LOOP] Falha ao monitorar a Europa em {guild.name}: {error}")
 
 
 # Inicialização: valida a credencial antes de conectar o cliente ao Discord.

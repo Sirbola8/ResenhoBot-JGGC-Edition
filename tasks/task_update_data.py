@@ -4,7 +4,10 @@ import json
 import os
 from tasks.obter_jogos_geral import obter_jogos, jogo_tem_time_filtrado
 
-from config import EUROPEAN_LEAGUES, EUROPEAN_TEAMS, SOUTH_AMERICAN_LEAGUES, SOUTH_AMERICAN_TEAMS
+from config import (
+    BRAZIL_NATIONAL_TEAM, EUROPEAN_LEAGUES, EUROPEAN_TEAMS,
+    SOUTH_AMERICAN_LEAGUES, SOUTH_AMERICAN_TEAMS,
+)
 
 # Atualiza a coleta completa para alimentar comandos e alertas automáticos.
 def atualizar_arquivo():
@@ -16,9 +19,14 @@ def atualizar_arquivo():
         # Mantém somente jogos dos clubes configurados na região correspondente.
         jogos_brasileiros = []
         jogos_europeus = []
+        jogos_selecao = []
         for jogo in todos_jogos:
             liga = str(jogo.get("liga", "")).casefold().strip()
-            if liga in SOUTH_AMERICAN_LEAGUES and jogo_tem_time_filtrado(
+            if liga == "selecao brasileira" and jogo_tem_time_filtrado(
+                jogo, [BRAZIL_NATIONAL_TEAM]
+            ):
+                jogos_selecao.append(jogo)
+            elif liga in SOUTH_AMERICAN_LEAGUES and jogo_tem_time_filtrado(
                 jogo, SOUTH_AMERICAN_TEAMS
             ):
                 jogos_brasileiros.append(jogo)
@@ -28,7 +36,7 @@ def atualizar_arquivo():
                 jogos_europeus.append(jogo)
 
         # Combina ambos: primeiro brasileiros, depois europeus
-        jogos_combinados = jogos_brasileiros + jogos_europeus
+        jogos_combinados = jogos_brasileiros + jogos_europeus + jogos_selecao
 
         # Cria o caminho do arquivo de forma compatível
         data_dir = os.path.join(os.path.dirname(__file__), '..', 'data')

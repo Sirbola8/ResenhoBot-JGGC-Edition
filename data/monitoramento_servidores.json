@@ -4,11 +4,14 @@
       "Flamengo",
       "Barcelona",
       "Real Madrid",
+      "manchester city",
+      "benfica",
+      "vasco",
       "Palmeiras",
       "Botafogo",
       "São Paulo"
     ],
-    "channel_id": 1489395180158062622,
+    "channel_id": [1489395180158062622, 1061402264817913967],
     "setup_channel_id": 1489395180158062622,
     "initialized": true,
     "prompted": false

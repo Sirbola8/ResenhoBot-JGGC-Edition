@@ -9,7 +9,10 @@ from urllib.request import Request, urlopen
 
 import pytz
 
-from config import EUROPEAN_TEAMS, SOUTH_AMERICAN_TEAMS
+from config import (
+    BRAZIL_NATIONAL_TEAM, BRAZIL_NATIONAL_TEAM_URL,
+    EUROPEAN_TEAMS, EUROPEAN_TEAM_URLS, SOUTH_AMERICAN_TEAMS,
+)
 from functions.team_utils import time_corresponde
 
 # COMPETIÇÕES E FEEDS: URLs de origem e padrão que localiza os dados embutidos nas páginas.
@@ -165,6 +168,33 @@ def obter_jogos(times_filtro=None):
                 descartados_por_filtro += 1
                 continue
             eventos_por_id[identificador] = evento
+
+    # Perfis por equipe cobrem clubes sem uma competição dedicada na coleta geral.
+    perfis = [
+        (nome, EUROPEAN_TEAM_URLS[nome])
+        for nome in ("Porto", "Benfica", "Sporting CP")
+        if nome in EUROPEAN_TEAM_URLS
+    ]
+    perfis.append((BRAZIL_NATIONAL_TEAM, BRAZIL_NATIONAL_TEAM_URL))
+    for nome_time, url in perfis:
+        eventos, erro = _buscar_eventos(url, nome_time)
+        if erro:
+            continue
+        for evento in eventos:
+            identificador = evento.get("id") or (
+                evento.get("data"), evento.get("hora"),
+                evento.get("mandante"), evento.get("visitante"), evento.get("liga"),
+            )
+            anterior = eventos_por_id.get(identificador)
+            if anterior and _prioridade_status(anterior) > _prioridade_status(evento):
+                continue
+            # O contexto do perfil nacional é próprio para permitir alertas independentes.
+            if nome_time == BRAZIL_NATIONAL_TEAM:
+                evento["liga"] = "selecao brasileira"
+            else:
+                evento["liga"] = "portugal"
+            if jogo_tem_time_filtrado(evento, [nome_time]):
+                eventos_por_id[identificador] = evento
 
     if falhas == len(FLASHSCORE_COMPETITIONS):
         raise RuntimeError("Could not read match feeds from any Flashscore competition.")
