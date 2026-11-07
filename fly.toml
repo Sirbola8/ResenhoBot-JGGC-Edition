@@ -7,10 +7,10 @@ primary_region = "gru"
   PYTHONUNBUFFERED = "1"
 
 [processes]
-  app = "python bot.py"
+  app = "sleep infinity"
 
 [[vm]]
-  memory = "1024mb"
+  memory = "512mb"
   cpu_kind = "shared"
   cpus = 1
 
