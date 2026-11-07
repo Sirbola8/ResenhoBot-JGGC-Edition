@@ -1,0 +1,513 @@
+{
+  "_estadios_times_europeus": {
+    "coletado_em": "2026-10-31",
+    "times": {
+      "AC Milan": {
+        "flashscore_url": "https://www.flashscore.com/team/ac-milan/8Sa8HInO/",
+        "estadio": "San Siro (Stadio Giuseppe Meazza)",
+        "cidade": "Milão",
+        "pais": "Itália",
+        "latitude": 45.47806,
+        "longitude": 9.124,
+        "fonte_coordenadas": "https://en.wikipedia.org/wiki/San_Siro",
+        "observacao": "Estádio atual compartilhado; os clubes anunciaram o Generali Stadium como futura casa em 29/10/2026.",
+        "fonte_observacao": "https://www.inter.it/en/news/inter-milan-generali-stadium-new-milano-stadium"
+      },
+      "Inter Milan": {
+        "flashscore_url": "https://www.flashscore.com/team/inter/Iw7eKK25/",
+        "estadio": "San Siro (Stadio Giuseppe Meazza)",
+        "cidade": "Milão",
+        "pais": "Itália",
+        "latitude": 45.47806,
+        "longitude": 9.124,
+        "fonte_coordenadas": "https://en.wikipedia.org/wiki/San_Siro",
+        "observacao": "Estádio atual compartilhado; os clubes anunciaram o Generali Stadium como futura casa em 29/10/2026.",
+        "fonte_observacao": "https://www.inter.it/en/news/inter-milan-generali-stadium-new-milano-stadium"
+      },
+      "Juventus": {
+        "flashscore_url": "https://www.flashscore.com/team/juventus/C06aJvIB/",
+        "estadio": "Allianz Stadium",
+        "cidade": "Turim",
+        "pais": "Itália",
+        "latitude": 45.10944,
+        "longitude": 7.64111,
+        "fonte_coordenadas": "https://en.wikipedia.org/wiki/Juventus_Stadium"
+      },
+      "Paris Saint-Germain": {
+        "flashscore_url": "https://www.flashscore.com/team/psg/CjhkPw0k/",
+        "estadio": "Parc des Princes",
+        "cidade": "Paris",
+        "pais": "França",
+        "latitude": 48.8414,
+        "longitude": 2.253,
+        "fonte_coordenadas": "https://en.wikipedia.org/wiki/Parc_des_Princes"
+      },
+      "Bayern Munich": {
+        "flashscore_url": "https://www.flashscore.com/team/bayern-munich/nVp0wiqd/",
+        "estadio": "Allianz Arena",
+        "cidade": "Munique",
+        "pais": "Alemanha",
+        "latitude": 48.2188,
+        "longitude": 11.6247,
+        "fonte_coordenadas": "https://en.wikipedia.org/wiki/Allianz_Arena"
+      },
+      "Borussia Dortmund": {
+        "flashscore_url": "https://www.flashscore.com/team/dortmund/nP1i5US1/",
+        "estadio": "Signal Iduna Park",
+        "cidade": "Dortmund",
+        "pais": "Alemanha",
+        "latitude": 51.4926,
+        "longitude": 7.4519,
+        "fonte_coordenadas": "https://en.wikipedia.org/wiki/Westfalenstadion"
+      },
+      "Atletico Madrid": {
+        "flashscore_url": "https://www.flashscore.com/team/atl-madrid/jaarqpLQ/",
+        "estadio": "Riyadh Air Metropolitano",
+        "cidade": "Madri",
+        "pais": "Espanha",
+        "latitude": 40.43611,
+        "longitude": -3.59944,
+        "fonte_coordenadas": "https://es.wikipedia.org/wiki/Estadio_Metropolitano_(Madrid)"
+      },
+      "Barcelona": {
+        "flashscore_url": "https://www.flashscore.com/team/barcelona/SKbpVP5K/",
+        "estadio": "Spotify Camp Nou",
+        "cidade": "Barcelona",
+        "pais": "Espanha",
+        "latitude": 41.3809,
+        "longitude": 2.1228,
+        "fonte_coordenadas": "https://en.wikipedia.org/wiki/Camp_Nou"
+      },
+      "Real Madrid": {
+        "flashscore_url": "https://www.flashscore.com/team/real-madrid/W8mj7MDD/",
+        "estadio": "Santiago Bernabéu",
+        "cidade": "Madri",
+        "pais": "Espanha",
+        "latitude": 40.45306,
+        "longitude": -3.68835,
+        "fonte_coordenadas": "https://en.wikipedia.org/wiki/Santiago_Bernab%C3%A9u_Stadium"
+      },
+      "Chelsea": {
+        "flashscore_url": "https://www.flashscore.com/team/chelsea/4fGZN2oK/",
+        "estadio": "Stamford Bridge",
+        "cidade": "Londres",
+        "pais": "Inglaterra",
+        "latitude": 51.48167,
+        "longitude": -0.19111,
+        "fonte_coordenadas": "https://en.wikipedia.org/wiki/Stamford_Bridge_(stadium)"
+      },
+      "Manchester United": {
+        "flashscore_url": "https://www.flashscore.com/team/manchester-united/ppjDR086/",
+        "estadio": "Old Trafford",
+        "cidade": "Manchester",
+        "pais": "Inglaterra",
+        "latitude": 53.46306,
+        "longitude": -2.29139,
+        "fonte_coordenadas": "https://en.wikipedia.org/wiki/Old_Trafford"
+      },
+      "Manchester City": {
+        "flashscore_url": "https://www.flashscore.com/team/manchester-city/Wtn9Stg0/",
+        "estadio": "Etihad Stadium",
+        "cidade": "Manchester",
+        "pais": "Inglaterra",
+        "latitude": 53.48306,
+        "longitude": -2.20028,
+        "fonte_coordenadas": "https://en.wikipedia.org/wiki/City_of_Manchester_Stadium"
+      },
+      "Tottenham": {
+        "flashscore_url": "https://www.flashscore.com/team/tottenham/UDg08Ohm/",
+        "estadio": "Tottenham Hotspur Stadium",
+        "cidade": "Londres",
+        "pais": "Inglaterra",
+        "latitude": 51.60472,
+        "longitude": -0.06639,
+        "fonte_coordenadas": "https://en.wikipedia.org/wiki/Tottenham_Hotspur_Stadium"
+      },
+      "Liverpool": {
+        "flashscore_url": "https://www.flashscore.com/team/liverpool/lId4TMwf/",
+        "estadio": "Anfield",
+        "cidade": "Liverpool",
+        "pais": "Inglaterra",
+        "latitude": 53.43083,
+        "longitude": -2.96083,
+        "fonte_coordenadas": "https://en.wikipedia.org/wiki/Anfield"
+      },
+      "Arsenal": {
+        "flashscore_url": "https://www.flashscore.com/team/arsenal/hA1Zm19f/",
+        "estadio": "Emirates Stadium",
+        "cidade": "Londres",
+        "pais": "Inglaterra",
+        "latitude": 51.555,
+        "longitude": -0.10861,
+        "fonte_coordenadas": "https://en.wikipedia.org/wiki/Emirates_Stadium"
+      }
+    }
+  },
+  "_estadios_times_sulamericanos": {
+    "coletado_em": "2026-10-31",
+    "nota": "Estádios principais de mando; partidas pontuais podem ocorrer em outro local.",
+    "times": {
+      "Flamengo": {
+        "estadio": "Maracanã",
+        "cidade": "Rio de Janeiro",
+        "pais": "Brasil",
+        "latitude": -22.91218,
+        "longitude": -43.23018,
+        "fonte_coordenadas": "https://pt.wikipedia.org/wiki/Est%C3%A1dio_do_Maracan%C3%A3"
+      },
+      "Corinthians": {
+        "estadio": "Neo Química Arena",
+        "cidade": "São Paulo",
+        "pais": "Brasil",
+        "latitude": -23.5453,
+        "longitude": -46.474,
+        "fonte_coordenadas": "https://pt.wikipedia.org/wiki/Neo_Qu%C3%ADmica_Arena"
+      },
+      "São Paulo": {
+        "estadio": "MorumBIS (Estádio Cícero Pompeu de Toledo)",
+        "cidade": "São Paulo",
+        "pais": "Brasil",
+        "latitude": -23.6,
+        "longitude": -46.7202,
+        "fonte_coordenadas": "https://pt.wikipedia.org/wiki/Est%C3%A1dio_do_Morumbi"
+      },
+      "Palmeiras": {
+        "estadio": "Nubank Parque (antigo Allianz Parque)",
+        "cidade": "São Paulo",
+        "pais": "Brasil",
+        "latitude": -23.5275,
+        "longitude": -46.6785,
+        "fonte_coordenadas": "https://www.palmeiras.com.br/nubank-parque/",
+        "fonte_nome_atual": "https://nu.com/pt/sala-de-imprensa/companhia/nubank-parque-e-o-novo-nome-da-arena-multiuso-do-palmeiras"
+      },
+      "Santos": {
+        "estadio": "Estádio Urbano Caldeira (Vila Belmiro)",
+        "cidade": "Santos",
+        "pais": "Brasil",
+        "latitude": -23.9519,
+        "longitude": -46.3397,
+        "fonte_coordenadas": "https://pt.wikipedia.org/wiki/Est%C3%A1dio_Urbano_Caldeira"
+      },
+      "Vasco da Gama": {
+        "estadio": "Estádio São Januário",
+        "cidade": "Rio de Janeiro",
+        "pais": "Brasil",
+        "latitude": -22.8909,
+        "longitude": -43.2285,
+        "fonte_coordenadas": "https://pt.wikipedia.org/wiki/Est%C3%A1dio_S%C3%A3o_Janu%C3%A1rio"
+      },
+      "Fluminense": {
+        "estadio": "Maracanã",
+        "cidade": "Rio de Janeiro",
+        "pais": "Brasil",
+        "latitude": -22.91218,
+        "longitude": -43.23018,
+        "fonte_coordenadas": "https://pt.wikipedia.org/wiki/Est%C3%A1dio_do_Maracan%C3%A3"
+      },
+      "Botafogo": {
+        "estadio": "Estádio Nilton Santos",
+        "cidade": "Rio de Janeiro",
+        "pais": "Brasil",
+        "latitude": -22.8938,
+        "longitude": -43.2932,
+        "fonte_coordenadas": "https://pt.wikipedia.org/wiki/Est%C3%A1dio_Ol%C3%ADmpico_Nilton_Santos"
+      },
+      "Atlético Mineiro": {
+        "estadio": "Arena MRV",
+        "cidade": "Belo Horizonte",
+        "pais": "Brasil",
+        "latitude": -19.9308,
+        "longitude": -44.0128,
+        "fonte_coordenadas": "https://pt.wikipedia.org/wiki/Arena_MRV"
+      },
+      "Cruzeiro": {
+        "estadio": "Mineirão (Estádio Governador Magalhães Pinto)",
+        "cidade": "Belo Horizonte",
+        "pais": "Brasil",
+        "latitude": -19.8659,
+        "longitude": -43.9707,
+        "fonte_coordenadas": "https://pt.wikipedia.org/wiki/Est%C3%A1dio_Governador_Magalh%C3%A3es_Pinto"
+      },
+      "Grêmio": {
+        "estadio": "Arena do Grêmio",
+        "cidade": "Porto Alegre",
+        "pais": "Brasil",
+        "latitude": -29.97333,
+        "longitude": -51.19444,
+        "fonte_coordenadas": "https://pt.wikipedia.org/wiki/Arena_do_Gr%C3%AAmio"
+      },
+      "Internacional": {
+        "estadio": "Beira-Rio (Estádio José Pinheiro Borda)",
+        "cidade": "Porto Alegre",
+        "pais": "Brasil",
+        "latitude": -30.0657,
+        "longitude": -51.2358,
+        "fonte_coordenadas": "https://pt.wikipedia.org/wiki/Est%C3%A1dio_Beira-Rio"
+      }
+    }
+  },
+  "Q7uBAm3s": {
+    "estadio": "Nubank Parque (antigo Allianz Parque)",
+    "cidade": "São Paulo",
+    "pais": "Brasil",
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "vVoR6526": {
+    "estadio": "Mineirão (Estádio Governador Magalhães Pinto)",
+    "cidade": "Belo Horizonte",
+    "pais": "Brasil",
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "YkfgAv9b": {
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "v9YyLeNG": {
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "ARJ356Ua": {
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "nFe3yH7c": {
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "0ID26d8N": {
+    "estadio": "Maracanã",
+    "cidade": "Rio de Janeiro",
+    "pais": "Brasil",
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "6ezUMHh4": {
+    "estadio": "Neo Química Arena",
+    "cidade": "São Paulo",
+    "pais": "Brasil",
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "zySpJZiT": {
+    "estadio": "Mineirão (Estádio Governador Magalhães Pinto)",
+    "cidade": "Belo Horizonte",
+    "pais": "Brasil",
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "6JIGDDFj": {
+    "estadio": "Arena do Grêmio",
+    "cidade": "Porto Alegre",
+    "pais": "Brasil",
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "pjkZ0zWp": {
+    "estadio": "Estádio São Januário",
+    "cidade": "Rio de Janeiro",
+    "pais": "Brasil",
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "A72E8Phd": {
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "CdsLOwOi": {
+    "estadio": "MorumBIS (Estádio Cícero Pompeu de Toledo)",
+    "cidade": "São Paulo",
+    "pais": "Brasil",
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "faNhnYLF": {
+    "estadio": "Nubank Parque (antigo Allianz Parque)",
+    "cidade": "São Paulo",
+    "pais": "Brasil",
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "xdZWqGpn": {
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "tYyhXx1t": {
+    "estadio": "Signal Iduna Park",
+    "cidade": "Dortmund",
+    "pais": "Alemanha",
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "Eyc1EfPH": {
+    "estadio": "Emirates Stadium",
+    "cidade": "Londres",
+    "pais": "Inglaterra",
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "fs9eEuno": {
+    "estadio": "Parc des Princes",
+    "cidade": "Paris",
+    "pais": "França",
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "f977U6FF": {
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "MFkKOMs1": {
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "4SrapZ2c": {
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "xEzJWyun": {
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "2ZAFSppS": {
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "A9JgHzZA": {
+    "estadio": "Riyadh Air Metropolitano",
+    "cidade": "Madri",
+    "pais": "Espanha",
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "UugSM0CD": {
+    "estadio": "San Siro (Stadio Giuseppe Meazza)",
+    "cidade": "Milão",
+    "pais": "Itália",
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "l2iCQrDl": {
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "zZPQYkxo": {
+    "estadio": "Allianz Arena",
+    "cidade": "Munique",
+    "pais": "Alemanha",
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "MuVKeqEE": {
+    "estadio": "Etihad Stadium",
+    "cidade": "Manchester",
+    "pais": "Inglaterra",
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "K2q8Ytr2": {
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "0lPbl16l": {
+    "estadio": "Tottenham Hotspur Stadium",
+    "cidade": "Londres",
+    "pais": "Inglaterra",
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "KhjmspaL": {
+    "estadio": "Stamford Bridge",
+    "cidade": "Londres",
+    "pais": "Inglaterra",
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "Ch0xovNM": {
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "QweLd3hK": {
+    "estadio": "Santiago Bernabéu",
+    "cidade": "Madri",
+    "pais": "Espanha",
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "2BrDVUfo": {
+    "estadio": "Allianz Stadium",
+    "cidade": "Turim",
+    "pais": "Itália",
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "U5YSgNrR": {
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "UorZXuM7": {
+    "estadio": "Anfield",
+    "cidade": "Liverpool",
+    "pais": "Inglaterra",
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "jkjRvZXb": {
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "vPVzwlTF": {
+    "estadio": "Emirates Stadium",
+    "cidade": "Londres",
+    "pais": "Inglaterra",
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "UaV3yLr4": {
+    "estadio": "San Siro (Stadio Giuseppe Meazza)",
+    "cidade": "Milão",
+    "pais": "Itália",
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "OxXVS94F": {
+    "estadio": "Etihad Stadium",
+    "cidade": "Manchester",
+    "pais": "Inglaterra",
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "6PURSlmI": {
+    "estadio": "Santiago Bernabéu",
+    "cidade": "Madri",
+    "pais": "Espanha",
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "QqI3ne15": {
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "CfLLoIBm": {
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "6wSZISyp": {
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "xn4kY4te": {
+    "estadio": "San Siro (Stadio Giuseppe Meazza)",
+    "cidade": "Milão",
+    "pais": "Itália",
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "zwfT2Gon": {
+    "estadio": "Riyadh Air Metropolitano",
+    "cidade": "Madri",
+    "pais": "Espanha",
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "v74Mijwo": {
+    "estadio": "Parc des Princes",
+    "cidade": "Paris",
+    "pais": "França",
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "Qmhi7GKs": {
+    "estadio": "Spotify Camp Nou",
+    "cidade": "Barcelona",
+    "pais": "Espanha",
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "jo8KhEeC": {
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "KvepELNk": {
+    "estadio": "Allianz Stadium",
+    "cidade": "Turim",
+    "pais": "Itália",
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "QsgOBBUG": {
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "zFs4TzdJ": {
+    "estadio": "Allianz Arena",
+    "cidade": "Munique",
+    "pais": "Alemanha",
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "hQboYtFL": {
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "jJeM4Z6c": {
+    "estadio": "San Siro (Stadio Giuseppe Meazza)",
+    "cidade": "Milão",
+    "pais": "Itália",
+    "consultado_em": "2026-11-05T21:10:15.041918+00:00"
+  },
+  "hUC4nhiT": {
+    "estadio": "San Siro (Stadio Giuseppe Meazza)",
+    "cidade": "Milão",
+    "pais": "Itália",
+    "consultado_em": "2026-11-05T21:10:42.753945+00:00"
+  }
+}
