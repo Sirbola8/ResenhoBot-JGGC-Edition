@@ -1,7 +1,5 @@
 """Configurações centrais dos clubes e das competições monitoradas."""
 
-import os
-
 # CLUBES MONITORADOS: nomes canônicos usados para filtrar partidas por região.
 BRAZILIAN_TEAMS = [
     "Flamengo",
@@ -135,4 +133,4 @@ EUROPEAN_LEAGUES = {
 }
 
 # Intervalo, em segundos, entre as execuções do monitor automático.
-CHECK_INTERVAL = int(os.getenv("CHECK_INTERVAL", "60"))
+CHECK_INTERVAL = 70

@@ -23,7 +23,6 @@ from tasks.obter_jogos_geral import (
 )
 from functions.team_utils import time_corresponde
 from functions.task_monitor_resenha import verificar_resenha
-from functions.task_monitor_european import verificar_partidas_europeias
 from functions.task_european_ucl import obter_proximo_jogo_european_teams
 from functions.task_brazilian import obter_proximo_jogo_brasileirao
 from functions.task_match_info import (
@@ -417,6 +416,381 @@ def _chave_partida_agendada(jogo):
         jogo.get('hora', ''), jogo.get('mandante', ''), jogo.get('visitante', ''),
     )
     return '|'.join(_normalizar_entrada(campo) for campo in campos)
+
+
+LIGAS_COM_JOGOS_DE_VOLTA = {
+    'libertadores', 'champions league', 'europa league', 'conference league',
+}
+LIGAS_COM_PRORROGACAO = {
+    'champions league', 'europa league', 'conference league',
+}
+
+
+def _placar_em_gols(placar):
+    partes = re.fullmatch(r'\s*(\d+)\s*x\s*(\d+)\s*', str(placar or ''), re.I)
+    if not partes:
+        return None
+    return int(partes.group(1)), int(partes.group(2))
+
+
+def _chave_partida_ao_vivo(jogo):
+    identificador = str(jogo.get('id', '')).strip()
+    if identificador:
+        return identificador
+    return _chave_partida_agendada(jogo)
+
+
+def _nomes_de_times_correspondem(nome_a, nome_b):
+    time_a = _resolver_time(nome_a)
+    time_b = _resolver_time(nome_b)
+    if time_a and time_b:
+        return time_a == time_b
+    return (
+        _normalizar_entrada(nome_a) == _normalizar_entrada(nome_b)
+        or time_corresponde(nome_a, nome_b)
+        or time_corresponde(nome_b, nome_a)
+    )
+
+
+def _time_esta_no_filtro(nome, times):
+    canonico = _resolver_time(nome)
+    return any(
+        _nomes_de_times_correspondem(nome, _resolver_time(time) or time)
+        or (canonico is not None and canonico == _resolver_time(time))
+        for time in times
+    )
+
+
+def _agregado_jogo_de_volta(jogo, jogos, placar_atual=None, historico=None):
+    """Infere a volta ao encontrar o confronto invertido encerrado recentemente."""
+    liga = _normalizar_entrada(jogo.get('liga', ''))
+    if liga not in LIGAS_COM_JOGOS_DE_VOLTA:
+        return None
+
+    inicio_atual = _inicio_jogo(jogo)
+    if inicio_atual is None:
+        return None
+
+    partidas_anteriores = list(jogos)
+    if historico:
+        partidas_anteriores.extend(historico)
+    id_atual = str(jogo.get('id', '')).strip()
+    for anterior in partidas_anteriores:
+        if anterior is jogo or not isinstance(anterior, dict):
+            continue
+        if id_atual and str(anterior.get('id', '')).strip() == id_atual:
+            continue
+        if _normalizar_entrada(anterior.get('liga', '')) != liga:
+            continue
+        if str(anterior.get('tipo_status', '')).upper() != 'ENCERRADO':
+            continue
+        if not (
+            _nomes_de_times_correspondem(
+                jogo.get('mandante', ''), anterior.get('visitante', '')
+            )
+            and _nomes_de_times_correspondem(
+                jogo.get('visitante', ''), anterior.get('mandante', '')
+            )
+        ):
+            continue
+
+        inicio_anterior = _inicio_jogo(anterior)
+        if inicio_anterior is None:
+            continue
+        intervalo = inicio_atual - inicio_anterior
+        if not datetime.timedelta(days=3) <= intervalo <= datetime.timedelta(days=14):
+            continue
+
+        gols_anteriores = _placar_em_gols(anterior.get('placar'))
+        if gols_anteriores is None:
+            continue
+        gols_atuais = _placar_em_gols(
+            jogo.get('placar') if placar_atual is None else placar_atual
+        ) or (0, 0)
+        # A partida atual tem os mandos invertidos em relação à ida.
+        agregado_mandante = gols_anteriores[1] + gols_atuais[0]
+        agregado_visitante = gols_anteriores[0] + gols_atuais[1]
+        return agregado_mandante, agregado_visitante
+    return None
+
+
+def _fases_partida_ao_vivo(
+    jogo, estado, pode_prorrogar, agregado_empatado=False
+):
+    """Converte o relógio/status do feed em marcos de jogo que ainda não avisamos."""
+    tempo = str(jogo.get('tempo_partida', '')).strip()
+    tempo_normalizado = _normalizar_entrada(tempo)
+    sent = set(estado.get('avisos', []))
+    fases = []
+
+    def adicionar(chave):
+        if chave not in sent and chave not in fases:
+            fases.append(chave)
+
+    eh_intervalo = (
+        tempo_normalizado in {'ht', 'half time', 'halftime', 'intervalo'}
+        or 'half time' in tempo_normalizado
+        or 'intervalo' in tempo_normalizado
+    )
+    segundo_tempo = any(
+        marcador in tempo_normalizado
+        for marcador in ('2nd half', 'second half', '2o tempo', '2 tempo')
+    )
+    minuto = None
+    encontrado = re.search(r'(?<!\d)(\d{1,3})(?:\s*\+\s*\d+)?\s*[\'’]?', tempo)
+    if encontrado:
+        try:
+            minuto = int(encontrado.group(1))
+        except ValueError:
+            pass
+
+    if eh_intervalo:
+        adicionar('fim_primeiro_tempo')
+    elif segundo_tempo or (minuto is not None and 46 <= minuto <= 90):
+        adicionar('fim_primeiro_tempo')
+        adicionar('inicio_segundo_tempo')
+
+    if pode_prorrogar:
+        tem_indicador_prorrogacao = (
+            'extra time' in tempo_normalizado
+            or 'overtime' in tempo_normalizado
+            or 'prorrogacao' in tempo_normalizado
+            or tempo_normalizado == 'et'
+            or tempo_normalizado.startswith('et ')
+            or (agregado_empatado and minuto is not None and minuto >= 91)
+        )
+        segundo_periodo_extra = any(
+            marcador in tempo_normalizado
+            for marcador in ('2nd extra', 'second extra', 'extra time 2', 'et 2')
+        )
+        primeiro_periodo_extra_iniciado = (
+            'inicio_primeiro_tempo_prorrogacao' in sent
+        )
+        if tem_indicador_prorrogacao:
+            if segundo_periodo_extra or (minuto is not None and minuto >= 106):
+                adicionar('inicio_primeiro_tempo_prorrogacao')
+                adicionar('fim_primeiro_tempo_prorrogacao')
+                adicionar('inicio_segundo_tempo_prorrogacao')
+            elif minuto is not None and minuto >= 105:
+                adicionar('inicio_primeiro_tempo_prorrogacao')
+                adicionar('fim_primeiro_tempo_prorrogacao')
+                adicionar('inicio_segundo_tempo_prorrogacao')
+            elif any(
+                marcador in tempo_normalizado
+                for marcador in ('break', 'intervalo')
+            ):
+                adicionar('inicio_primeiro_tempo_prorrogacao')
+                adicionar('fim_primeiro_tempo_prorrogacao')
+            else:
+                adicionar('inicio_primeiro_tempo_prorrogacao')
+        elif primeiro_periodo_extra_iniciado and minuto is not None and minuto >= 105:
+            adicionar('fim_primeiro_tempo_prorrogacao')
+            adicionar('inicio_segundo_tempo_prorrogacao')
+
+        # O feed pode passar diretamente do segundo tempo da prorrogação ao encerrado.
+        if (
+            str(jogo.get('tipo_status', '')).upper() == 'ENCERRADO'
+            and 'inicio_segundo_tempo_prorrogacao' in sent
+        ):
+            adicionar('fim_segundo_tempo_prorrogacao')
+    return fases
+
+
+def _texto_alerta_partida_ao_vivo(
+    tipo, jogo, placar, agregado=None, times_monitorados=None
+):
+    mandante = discord.utils.escape_markdown(str(jogo.get('mandante', '?')))
+    visitante = discord.utils.escape_markdown(str(jogo.get('visitante', '?')))
+    competencia = discord.utils.escape_markdown(str(jogo.get('liga', 'Partida')))
+    partida = f'**{mandante} x {visitante}**'
+    placar_atual = f'**{mandante} {placar} {visitante}**'
+    if tipo == 'inicio_partida':
+        placar_inicial = f'**{mandante} 0 x 0 {visitante}**'
+        resumo_agregado = (
+            f' (agregado {agregado[0]} x {agregado[1]})' if agregado else ''
+        )
+        return (
+            f'🔴 A bola rolou em {partida}: {placar_inicial}{resumo_agregado}. '
+            f'Já pode preparar a corneta. · {competencia}'
+        )
+    if tipo == 'gol_mandante':
+        time_gol = mandante
+        time_monitorado = _time_esta_no_filtro(
+            jogo.get('mandante', ''), times_monitorados or []
+        )
+    elif tipo == 'gol_visitante':
+        time_gol = visitante
+        time_monitorado = _time_esta_no_filtro(
+            jogo.get('visitante', ''), times_monitorados or []
+        )
+    else:
+        time_gol = ''
+        time_monitorado = False
+    if tipo in {'gol_mandante', 'gol_visitante'}:
+        if time_monitorado:
+            zoeira = f'🔥 {time_gol} guardou! O rival já está procurando desculpa no VAR.'
+        else:
+            zoeira = f'💀 Gol de {time_gol}. O time do radar tomou e agora vai ter que correr atrás.'
+        return f'{zoeira}\n⚽ {placar_atual} · {competencia}'
+
+    mensagens = {
+        'fim_primeiro_tempo': '⏸️ Fim do primeiro tempo. Intervalo pra hidratar e ensaiar a desculpa.',
+        'inicio_segundo_tempo': '▶️ Começou o segundo tempo. Voltaram do intervalo com alguma ideia?',
+        'inicio_primeiro_tempo_prorrogacao': '⏱️ Começou o primeiro tempo da prorrogação. O sofrimento ganhou hora extra.',
+        'fim_primeiro_tempo_prorrogacao': '⏸️ Fim do primeiro tempo da prorrogação. Ainda tem mais novela vindo aí.',
+        'inicio_segundo_tempo_prorrogacao': '▶️ Começou o segundo tempo da prorrogação. Aguenta o coração, fiscal de sofá.',
+        'fim_segundo_tempo_prorrogacao': '🏁 Fim do segundo tempo da prorrogação. Acabou a gasolina; agora é sobreviver ao resultado.',
+    }
+    return f'{mensagens[tipo]}\n⚽ {placar_atual} · {competencia}'
+
+
+async def _monitorar_partidas_ao_vivo(jogos):
+    """Envia somente início, gols e marcos de período dos times de cada servidor."""
+    jogos_por_chave = {
+        _chave_partida_ao_vivo(jogo): jogo
+        for jogo in jogos if isinstance(jogo, dict)
+    }
+    agora = datetime.datetime.now(FUSO_BRASIL)
+
+    for guild in bot.guilds:
+        configuracao = guild_settings.get(str(guild.id), {})
+        if not configuracao.get('initialized'):
+            continue
+        times = configuracao.get('teams') or []
+        canais = _canais_configurados(configuracao)
+        if not times or not canais:
+            continue
+
+        for canal_id in canais:
+            canal = bot.get_channel(canal_id)
+            if canal is None:
+                try:
+                    canal = await bot.fetch_channel(canal_id)
+                except discord.HTTPException as error:
+                    print(f'[AO VIVO] Canal {canal_id} indisponível: {error}')
+                    continue
+
+            estados_por_canal = configuracao.setdefault('live_match_states', {})
+            estado_canal = estados_por_canal.setdefault(str(canal_id), {})
+            chaves_vistas = set()
+
+            for chave, jogo in jogos_por_chave.items():
+                status = str(jogo.get('tipo_status', '')).upper()
+                estado = estado_canal.get(chave)
+                monitorado = any(
+                    _time_esta_no_filtro(jogo.get(lado, ''), times)
+                    for lado in ('mandante', 'visitante')
+                )
+                if not monitorado or (status != 'AO_VIVO' and not estado):
+                    continue
+                chaves_vistas.add(chave)
+
+                estado = estado or {'placar': '0 x 0', 'avisos': []}
+                estado.setdefault('placar', '0 x 0')
+                estado.setdefault('avisos', [])
+                estado_canal[chave] = estado
+                estado.update({
+                    'id': str(jogo.get('id', '')).strip(),
+                    'liga': str(jogo.get('liga', '')).strip(),
+                    'mandante': str(jogo.get('mandante', '')).strip(),
+                    'visitante': str(jogo.get('visitante', '')).strip(),
+                    'data': str(jogo.get('data', '')).strip(),
+                    'hora': str(jogo.get('hora', '')).strip(),
+                    'tipo_status': status,
+                })
+                placar = str(jogo.get('placar', '0 x 0')).strip()
+                gols_atuais = _placar_em_gols(placar) or (0, 0)
+                gols_anteriores = _placar_em_gols(estado.get('placar')) or (0, 0)
+                historico_canal = list(estado_canal.values())
+                agregado = _agregado_jogo_de_volta(
+                    jogo, jogos, historico=historico_canal
+                )
+                agregado_inicial = _agregado_jogo_de_volta(
+                    jogo, jogos, placar_atual='0 x 0',
+                    historico=historico_canal,
+                )
+                liga = _normalizar_entrada(jogo.get('liga', ''))
+                pode_prorrogar = agregado is not None and liga in LIGAS_COM_PRORROGACAO
+
+                eventos = []
+                avisos = set(estado.get('avisos', []))
+                if status == 'AO_VIVO' and 'inicio_partida' not in avisos:
+                    eventos.append(('inicio_partida', 'inicio_partida'))
+
+                if gols_atuais[0] > gols_anteriores[0]:
+                    eventos.append((
+                        'gol_mandante', f'gol_mandante_{gols_atuais[0]}'
+                    ))
+                if gols_atuais[1] > gols_anteriores[1]:
+                    eventos.append((
+                        'gol_visitante', f'gol_visitante_{gols_atuais[1]}'
+                    ))
+
+                agregado_empatado = (
+                    agregado is not None and agregado[0] == agregado[1]
+                )
+                for fase in _fases_partida_ao_vivo(
+                    jogo, estado, pode_prorrogar,
+                    agregado_empatado=agregado_empatado,
+                ):
+                    eventos.append((fase, fase))
+
+                for tipo, token in eventos:
+                    if token in estado['avisos']:
+                        continue
+                    mensagem = _texto_alerta_partida_ao_vivo(
+                        tipo, jogo, placar,
+                        agregado_inicial if tipo == 'inicio_partida' else agregado,
+                        times_monitorados=times,
+                    )
+                    try:
+                        await canal.send(
+                            mensagem,
+                            allowed_mentions=discord.AllowedMentions.none(),
+                        )
+                    except discord.HTTPException as error:
+                        print(f'[AO VIVO] Falha ao enviar aviso em {canal_id}: {error}')
+                        continue
+
+                    estado['avisos'].append(token)
+                    if tipo == 'gol_mandante':
+                        gols_anteriores = (gols_atuais[0], gols_anteriores[1])
+                    elif tipo == 'gol_visitante':
+                        gols_anteriores = (gols_anteriores[0], gols_atuais[1])
+                    estado['placar'] = f'{gols_anteriores[0]} x {gols_anteriores[1]}'
+                    estado['atualizado_em'] = agora.isoformat()
+                    try:
+                        _salvar_configuracoes_servidores()
+                    except OSError as error:
+                        print(f'[AO VIVO] Falha ao salvar estado da partida: {error}')
+
+                if gols_atuais[0] < gols_anteriores[0]:
+                    gols_anteriores = (gols_atuais[0], gols_anteriores[1])
+                if gols_atuais[1] < gols_anteriores[1]:
+                    gols_anteriores = (gols_anteriores[0], gols_atuais[1])
+                estado['placar'] = f'{gols_anteriores[0]} x {gols_anteriores[1]}'
+                estado['atualizado_em'] = agora.isoformat()
+                estado_canal[chave] = estado
+
+            # Remove estados antigos para manter pequeno o arquivo de configurações.
+            for chave, estado in list(estado_canal.items()):
+                if chave in chaves_vistas:
+                    continue
+                try:
+                    atualizado_em = datetime.datetime.fromisoformat(
+                        estado.get('atualizado_em', '')
+                    )
+                    if atualizado_em.tzinfo is None:
+                        atualizado_em = FUSO_BRASIL.localize(atualizado_em)
+                except (TypeError, ValueError):
+                    atualizado_em = agora - datetime.timedelta(days=4)
+                if agora - atualizado_em > datetime.timedelta(days=14):
+                    estado_canal.pop(chave, None)
+
+    try:
+        _salvar_configuracoes_servidores()
+    except OSError as error:
+        print(f'[AO VIVO] Falha ao salvar estados das partidas: {error}')
 
 
 def _avisos_agendados_devidos(jogo, agora, janela):
@@ -1524,6 +1898,7 @@ async def scheduled_notifications_loop():
 async def monitoring_loop():
     global _aviso_selecao_verificado_nesta_execucao
     loop = asyncio.get_running_loop()
+    jogos = []
     try:
         await loop.run_in_executor(None, atualizar_arquivo)
     except Exception as error:
@@ -1532,6 +1907,15 @@ async def monitoring_loop():
     try:
         with open(DATA_PATH, 'r', encoding='utf-8') as arquivo:
             jogos = json.load(arquivo)
+        if not isinstance(jogos, list):
+            jogos = []
+        await _monitorar_partidas_ao_vivo(jogos)
+    except (OSError, json.JSONDecodeError) as error:
+        print(f"[AO VIVO] Não foi possível carregar os jogos monitorados: {error}")
+    except Exception as error:
+        print(f"[AO VIVO] Falha ao verificar os marcos das partidas: {error}")
+
+    try:
         jogos_ativos = [
             jogo for jogo in jogos
             if isinstance(jogo, dict)
@@ -1604,8 +1988,10 @@ async def monitoring_loop():
                     await verificar_resenha(
                         bot=bot,
                         alert_channel_id=canal_id,
-                        rival_teams=times_brasileiros,
-                        european_teams=times_europeus,
+                        # Os gols e marcos ao vivo agora são centralizados acima;
+                        # os argumentos vazios preservam os avisos de próximos jogos.
+                        rival_teams=[],
+                        european_teams=[],
                         proximo_jogo_europeu_func=(
                             lambda: obter_proximo_jogo_european_teams(
                                 times_filtro=times_europeus
@@ -1620,15 +2006,6 @@ async def monitoring_loop():
                     )
                 except Exception as error:
                     print(f"[LOOP] Falha ao verificar a resenha em {guild.name}: {error}")
-
-                if times_europeus:
-                    try:
-                        await verificar_partidas_europeias(
-                            bot, canal_id, times_europeus,
-                            state_key=f'{guild.id}:{canal_id}',
-                        )
-                    except Exception as error:
-                        print(f"[LOOP] Falha ao monitorar a Europa em {guild.name}: {error}")
 
 
 # Inicialização: valida a credencial antes de conectar o cliente ao Discord.

@@ -286,6 +286,8 @@ def _converter_evento_flashscore(campos, nome_liga):
         "mandante": mandante,
         "visitante": visitante,
         "placar": placar,
+        # O campo AC do feed traz o relógio/situação atual (ex.: 45+2, HT, 2nd Half).
+        "tempo_partida": campos.get("AC", "").strip(),
         "status": f"{inicio.strftime('%d/%m')} — {hora}",
         "tipo_status": tipo_status,
         "liga": nome_liga,
