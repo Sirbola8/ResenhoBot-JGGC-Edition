@@ -1,149 +1,118 @@
-# ⚽ ResenhoBot — Python
+# ⚽ ResenhoBot
 
-### Install and Run
+Bot de futebol para Discord, escrito em Python. Ele consulta partidas e classificações no Flashscore, permite escolher os clubes monitorados em cada servidor e publica resultados, lembretes e alertas de partidas ao vivo.
+
+## Funcionalidades
+
+- Agenda e resultados dos clubes configurados: 12 brasileiros e 18 europeus.
+- Alertas automáticos de início, gols e marcos de período. Os placares ao vivo vêm do feed de partidas em andamento do Flashscore.
+- Lembretes de partidas futuras com 24 horas e 30 minutos de antecedência e lembrete diário às 13h para partidas ainda não encerradas.
+- Consulta dos próximos jogos de um clube, da agenda do dia e das competições continentais.
+- Classificações de Libertadores, Sul-Americana e Copa do Mundo por grupos.
+- Comando `!tabela` com HUD paginado para Brasileirão Série A, Premier League, LaLiga, Serie A italiana, Bundesliga e Ligue 1. Mostra dez posições por página e as setas avançam até o fim da tabela.
+- Dados de configuração e histórico de alertas salvos por servidor, evitando que o bot dependa de configurações em memória após reiniciar.
+
+O monitoramento de partidas roda a cada 70 segundos. Os lembretes de agenda são verificados a cada 15 segundos.
+
+## Requisitos
+
+- Python e `pip`.
+- Uma aplicação de bot criada no [Discord Developer Portal](https://discord.com/developers/applications).
+
+No painel do Discord, habilite **Message Content Intent** em *Bot → Privileged Gateway Intents*. Ao convidar o bot, conceda acesso aos canais em que ele será usado, além das permissões **Send Messages** e **Embed Links**.
+
+## Instalação e execução
+
+Na raiz do projeto, crie e ative um ambiente virtual e instale as dependências:
 
 ```bash
-# 1. Enter the project folder
-cd resenhoBot
+python -m venv .venv
+```
 
-# 2. Create a virtual environment (recommended)
-python -m venv venv
-source venv/bin/activate         # Linux/Mac
-venv\Scripts\activate            # Windows
+```powershell
+# Windows PowerShell
+.venv\Scripts\Activate.ps1
+Copy-Item env.example .env
+```
 
-# Standard execution without virtual environment
-python bot.py
+```bash
+# Linux ou macOS
+source .venv/bin/activate
+cp env.example .env
+```
 
-# 3. Install dependencies
+Edite `.env` e informe o token do bot:
+
+```dotenv
+DISCORD_TOKEN=seu_token_do_discord
+```
+
+Instale as dependências e inicie o bot:
+
+```bash
 pip install -r requirements.txt
-
-# 4. Set up environment variables
-cp .env.example .env
-# Edit .env with your credentials
-````
-
------
-
-## Step-by-Step Configuration
-
-### 1\. Create the Discord Bot
-
-1.  Go to [discord.com/developers/applications](https://discord.com/developers/applications)
-2.  Click **New Application** → give it a name (e.g., `Resenha Alert`)
-3.  Go to **Bot** → click **Add Bot**
-4.  Under **Privileged Gateway Intents**, enable:
-      - `Server Members Intent`
-      - `Message Content Intent`
-5.  Click **Reset Token** and copy it → this is your `DISCORD_TOKEN`
-6.  Go to **OAuth2 → URL Generator**:
-      - Scopes: `bot`
-      - Permissions: `Send Messages`, `Embed Links`, `Mention Everyone`
-7.  Access the generated URL in your browser to add the bot to your server
-
-### 2\. Configure Rival Teams
-
-Open `bot.py` and edit the `RIVAL_TEAMS` list:
-
-```python
-RIVAL_TEAMS = [
-    "Vasco",
-    "Palmeiras",
-    "São Paulo",
-    # Add the teams you dislike here
-]
-```
-
-## Running the Bot
-
-```bash
 python bot.py
 ```
 
-You should see the following in the terminal:
+O bot encerra a inicialização com uma mensagem de erro se `DISCORD_TOKEN` não estiver definido. Não compartilhe o token nem o envie para o repositório.
 
-```
-✅ Bot online: ResenhoBot#1234
-⚽ Monitoring rivals: Flamengo, Palmeiras
-⏱️ Checking every 60s
-```
+## Configuração no Discord
 
------
+Quando o bot entrar no servidor, ele inicia a configuração pedindo um clube brasileiro. Use `!configresenha` (ou `!config`) para consultar a configuração atual ou iniciar o cadastro se o servidor ainda não foi configurado. Depois de escolher o primeiro clube:
 
-## Alert Logic
+1. Use `!<nome do time>` para adicionar um clube ao monitoramento do servidor.
+2. Para remover um clube, use o mesmo comando e confirme com `sim` ou `não`.
+3. Use `!aqui` no canal que deve receber os avisos automáticos. Cada servidor pode definir seu próprio canal.
 
-```
-Rival was WINNING → switches to LOSING or DRAWING
-    → 🚨 "Possible banter in [League]!"
+O primeiro clube deve ser um dos brasileiros. Depois, podem ser adicionados os demais clubes brasileiros e os europeus listados em `config.py`. As configurações por servidor ficam em `data/monitoramento_servidores.json`, criado durante a execução.
 
-Rival was LOSING/DRAWING → switches to WINNING
-    → ✅ "Banter canceled"
-```
+## Comandos
 
-The bot keeps the state of each match in memory. If the bot restarts during a game, it starts monitoring from scratch (without previous alert history).
+| Comando | O que faz |
+| --- | --- |
+| `!ajuda` | Exibe a ajuda no Discord. |
+| `!configresenha`, `!config`, `!configuracao` ou `!setup` | Mostra a configuração do servidor ou inicia o cadastro se ainda não estiver configurado. |
+| `!aqui` | Define o canal atual como destino dos avisos automáticos do servidor. |
+| `!<nome do time>` | Adiciona ou remove um clube da lista monitorada. Exemplo: `!Flamengo`. |
+| `!jogos` ou `!jogoshoje` | Mostra os jogos de hoje dos clubes monitorados no servidor. |
+| `!jogos<nome do time>` | Mostra os próximos três jogos do clube. Exemplo: `!jogosManchester City`. |
+| `!jogos27`, `!jogostodos` ou `!jogos27times` | Mostra os jogos de hoje de todos os clubes cadastrados no código (12 brasileiros e 18 europeus). Os nomes `jogos27` e `jogos27times` são aliases antigos. |
+| `!jogossulamericanos` ou `!sulamericanos` | Mostra jogos do dia e o próximo jogo futuro dos brasileiros monitorados. |
+| `!jogoseuropeus` ou `!europeus` | Mostra jogos do dia e o próximo jogo futuro dos europeus monitorados. |
+| `!jogoschampions`, `!jogosucl` ou `!ucl` | Mostra próximos jogos da Champions League entre os clubes monitorados. |
+| `!jogoseuropaleague`, `!jogoseuroleague`, `!jogoseuro` ou `!euroleague` | Mostra próximos jogos da Europa League entre os clubes monitorados. |
+| `!jogosconf`, `!conf` ou `!conferenceleague` | Mostra próximos jogos da Conference League entre os clubes monitorados. |
+| `!jogosliberta`, `!libertadores` ou `!liberta` | Mostra próximos jogos da Libertadores entre os brasileiros monitorados. |
+| `!fasegrupos <torneio>` ou `!fg <torneio>` | Mostra a classificação por grupos da Libertadores, Sul-Americana ou Copa do Mundo. |
+| `!tabela <liga>`, `!classificacao <liga>` ou `!standings <liga>` | Mostra a classificação com setas para navegar pelas posições. |
+| `!selecao` | Lista os jogos registrados da Seleção Brasileira. |
+| `!datafifa` ou `!df` | Publica o aviso de Data FIFA. |
+| `!salve` | Responde ao cumprimento. |
 
------
+Para `!tabela`, os nomes aceitos incluem `brasileirão`, `premier league`, `laliga`, `serie a`, `bundesliga` e `ligue 1`. Exemplos de classificação por grupos: `!fasegrupos libertadores`, `!fg sulamericana` e `!fg copa do mundo`.
 
-## 🛠️ Project Structure
+## Arquivos principais
 
-  * `bot.py`: Bot entry point, contains commands and Discord logic.
-  * `tasks/task_update_data.py`: Manages writing to the local JSON file.
-  * `tasks/obter_jogos_geral.py`: Collects fixtures and scores from the configured SofaScore leagues, including the full current-day schedule.
-  * `data/dados_jogos.json`: Stores the current state of the round's matches.
+- `bot.py`: comandos, configuração dos servidores e lógica de notificações do Discord.
+- `config.py`: clubes, aliases, competições e intervalo do monitoramento.
+- `functions/league_standings.py`: consulta e interpretação das tabelas das ligas.
+- `functions/task_match_info.py`: consulta e cache dos detalhes das partidas.
+- `tasks/obter_jogos_geral.py`: coleta e normalização dos jogos e placares do Flashscore.
+- `tasks/task_update_data.py`: atualiza `data/dados_jogos.json`, usado pelos comandos e alertas.
+- `data/monitoramento_servidores.json`: preferências e estado dos avisos por servidor, criado durante a execução.
+- `data/detalhes_partidas.json`: cache de detalhes de partidas, criado durante a execução.
 
-## 🚀 Features
+As páginas e feeds do Flashscore são consultados em tempo de execução; a disponibilidade dos comandos de dados depende do acesso ao serviço.
 
-  * **Automatic Match Updates:** Reads recent/upcoming matches and the full current-day schedule from the SofaScore API, then applies the configured team filters.
-  * **Automatic Update:** Features a background task that updates the database every 2 minutes.
-  * **Match Command:** The `!jogos` command displays the full round list with visual indicators:
-      * 🟢 **Live**
-      * ⬛ **Finished**
-      * 🔵 **Upcoming matches**
-  * **Daily Discord Results:** `!jogos`, `!jogossulamericanos`, and `!jogoseuropeus` report that day's matches in the invoking channel. Finished matches show only the result; live matches include Brazilian TV channels when SofaScore lists them.
-  * **Rival Filter:** Internal configuration to monitor specific teams the user wants to "keep a close eye on."
+## Contribuição
 
------
+1. Faça um fork do projeto.
+2. Crie uma branch para a alteração: `git checkout -b feature/minha-alteracao`.
+3. Faça commits com as mudanças.
+4. Envie a branch e abra um Pull Request.
 
-## Project Contributors
+## Colaboradores
 
-<table style="width:100%">
-    <tr>
-        <td align="center">
-        <a href="https://github.com/Gl1tch42">
-            <img src="https://github.com/Gl1tch42.png" width="100px;" alt="Jean Michel"><br>
-            <sub><b>Jean Michel</b></sub>
-        </a><br>
-        🚀 Lead Developer
-        </td>
-        <td align="center">
-        <a href="https://github.com/Sirbola8">
-            <img src="https://github.com/Sirbola8.png" width="100px;" alt="Jão Gabriel"><br>
-            <sub><b>Jão Gabriel</b></sub>
-        </a><br>
-        🚀 Developer
-        </td>
-        <td align="center">
-        <a href="https://github.com/Kaio-Msr">
-            <img src="https://github.com/Kaio-Msr.png" width="100px;" alt="Kaio msr"><br>
-            <sub><b>Kaio msr</b></sub>
-        </a><br>
-        🚀 Developer
-        </td>
-    </tr>
-</table>
-
------
-
-### 💡 How to Contribute
-
-Feel free to suggest improvements or report bugs\! To contribute:
-
-1.  **Fork** the project.
-2.  Create a **Branch** for your modification (`git checkout -b feature/new-feature`).
-3.  **Commit** your changes (`git commit -m 'Adding new alert function'`).
-4.  **Push** your branch (`git push origin feature/new-feature`).
-5.  Open a **Pull Request**.
-
-> **Note:** If you are developing this bot together for your personal server, feel free to customize the contribution roles based on each person's participation\!
-
-```
-```
+- [Jean Michel](https://github.com/Gl1tch42) — Lead Developer
+- [Jão Gabriel](https://github.com/Sirbola8) — Developer
+- [Kaio Msr](https://github.com/Kaio-Msr) — Developer
