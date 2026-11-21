@@ -41,6 +41,7 @@ FLASHSCORE_GROUP_FEED_IDS = {
 }
 FLASHSCORE_GROUP_FEED_BASE = "https://global.flashscore.ninja/401/x/feed/to_"
 FLASHSCORE_FEED_SIGNATURE = "SW9D1eZo"
+FLASHSCORE_LIVE_FEED_URL = "https://global.flashscore.ninja/401/x/feed/df_live_1_1"
 FLASHSCORE_INITIAL_FEEDS = re.compile(
     r'cjs\.initialFeeds\["([^"]+)"\]\s*=\s*\{\s*data:\s*`([^`]*)`',
     re.DOTALL,
@@ -196,6 +197,23 @@ def obter_jogos(times_filtro=None):
             if jogo_tem_time_filtrado(evento, [nome_time]):
                 eventos_por_id[identificador] = evento
 
+    # O resumo HTML pode ficar atrasado durante o jogo. O feed ao vivo entrega
+    # o placar mais recente e é aplicado sobre os mesmos IDs antes de salvar.
+    placares_ao_vivo, erro_feed_ao_vivo = _buscar_placares_ao_vivo()
+    placares_aplicados = 0
+    if erro_feed_ao_vivo:
+        print("[FLASHSCORE] Não foi possível consultar o feed de placares ao vivo; usando os resumos das ligas.")
+    else:
+        for identificador, dados_ao_vivo in placares_ao_vivo.items():
+            evento = eventos_por_id.get(identificador)
+            if evento is None or evento.get("tipo_status") == "ENCERRADO":
+                continue
+            evento["placar"] = dados_ao_vivo["placar"]
+            evento["tipo_status"] = "AO_VIVO"
+            if dados_ao_vivo["tempo_partida"]:
+                evento["tempo_partida"] = dados_ao_vivo["tempo_partida"]
+            placares_aplicados += 1
+
     if falhas == len(FLASHSCORE_COMPETITIONS):
         raise RuntimeError("Could not read match feeds from any Flashscore competition.")
 
@@ -203,6 +221,7 @@ def obter_jogos(times_filtro=None):
 
     print(
         f"[FLASHSCORE] Unique events: {len(eventos_por_id)} | "
+        f"Placares ao vivo aplicados: {placares_aplicados} | "
         f"Descartados pelo filtro de times: {descartados_por_filtro} | "
         f"Collected matches: {len(lista_resultados)} | "
         f"Consultas com falha: {falhas}."
@@ -244,6 +263,53 @@ def _buscar_eventos(url, contexto):
         print(f"[FLASHSCORE] No match feeds found for {contexto}.")
         return [], True
     return eventos, False
+
+
+def _buscar_placares_ao_vivo():
+    """Lê o feed de partidas em andamento para não depender do HTML em cache."""
+    request = Request(
+        FLASHSCORE_LIVE_FEED_URL,
+        headers={
+            "Accept": "text/plain,*/*;q=0.9",
+            "Accept-Language": "en-US,en;q=0.9",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+            "Referer": "https://www.flashscore.com/",
+            "Origin": "https://www.flashscore.com",
+            "x-fsign": FLASHSCORE_FEED_SIGNATURE,
+            "x-geoip": "1",
+            "x-referer": "www.flashscore.com",
+            "Cache-Control": "no-cache, no-store, max-age=0",
+            "Pragma": "no-cache",
+        },
+    )
+    try:
+        with urlopen(request, timeout=12) as response:
+            feed = response.read().decode("utf-8", errors="replace")
+    except (HTTPError, URLError, TimeoutError, OSError) as error:
+        print(f"[FLASHSCORE] Falha ao consultar placares ao vivo: {error}")
+        return {}, True
+
+    if not feed.strip() or feed.strip() == "0":
+        return {}, False
+
+    placares = {}
+    for registro in feed.split("~AA÷")[1:]:
+        campos = _campos_feed(registro)
+        identificador = campos.get("AA", "").strip()
+        gols_mandante = campos.get("AG", "").strip()
+        gols_visitante = campos.get("AH", "").strip()
+        if (
+            not identificador
+            or campos.get("AB", "").strip() != "2"
+            or not re.fullmatch(r"\d+", gols_mandante)
+            or not re.fullmatch(r"\d+", gols_visitante)
+        ):
+            continue
+        placares[identificador] = {
+            "placar": f"{gols_mandante} x {gols_visitante}",
+            "tempo_partida": campos.get("AC", "").strip(),
+        }
+    return placares, False
 
 # Separa os campos codificados de um registro do feed Flashscore.
 def _campos_feed(registro):

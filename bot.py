@@ -30,6 +30,11 @@ from functions.task_match_info import (
     adicionar_campos_local_arbitragem,
     limpar_cache_consultas,
 )
+from functions.league_standings import (
+    LIGAS_CLASSIFICACAO,
+    localizar_liga,
+    obter_classificacao_liga,
+)
 import json
 import asyncio
 import datetime
@@ -383,6 +388,8 @@ def _times_do_servidor(guild_id, regiao=None):
     return list(times)
 
 
+# ALERTAS AO VIVO: comparam cada coleta por servidor/canal e guardam o estado
+# no JSON para detectar mudanças uma única vez, mesmo após reinícios do bot.
 def _canais_configurados(configuracao):
     """Aceita tanto um canal quanto a lista de canais salva nas configurações."""
     ids = configuracao.get('channel_id') or []
@@ -418,6 +425,8 @@ def _chave_partida_agendada(jogo):
     return '|'.join(_normalizar_entrada(campo) for campo in campos)
 
 
+# Nas competições de mata-mata, o feed não identifica a perna; a volta é inferida
+# pelo confronto invertido recente, e a prorrogação só é considerada nas copas elegíveis.
 LIGAS_COM_JOGOS_DE_VOLTA = {
     'libertadores', 'champions league', 'europa league', 'conference league',
 }
@@ -462,7 +471,7 @@ def _time_esta_no_filtro(nome, times):
 
 
 def _agregado_jogo_de_volta(jogo, jogos, placar_atual=None, historico=None):
-    """Infere a volta ao encontrar o confronto invertido encerrado recentemente."""
+    """Detecta a volta pelo duelo invertido encerrado de 3 a 14 dias antes e soma os gols da ida ao placar atual."""
     liga = _normalizar_entrada(jogo.get('liga', ''))
     if liga not in LIGAS_COM_JOGOS_DE_VOLTA:
         return None
@@ -517,7 +526,7 @@ def _agregado_jogo_de_volta(jogo, jogos, placar_atual=None, historico=None):
 def _fases_partida_ao_vivo(
     jogo, estado, pode_prorrogar, agregado_empatado=False
 ):
-    """Converte o relógio/status do feed em marcos de jogo que ainda não avisamos."""
+    """Traduz o relógio/status em marcos inéditos, recuperando etapas omitidas entre duas coletas."""
     tempo = str(jogo.get('tempo_partida', '')).strip()
     tempo_normalizado = _normalizar_entrada(tempo)
     sent = set(estado.get('avisos', []))
@@ -599,6 +608,7 @@ def _fases_partida_ao_vivo(
 def _texto_alerta_partida_ao_vivo(
     tipo, jogo, placar, agregado=None, times_monitorados=None
 ):
+    # Gols de times filtrados recebem provocação de comemoração; gols sofridos, de cobrança.
     mandante = discord.utils.escape_markdown(str(jogo.get('mandante', '?')))
     visitante = discord.utils.escape_markdown(str(jogo.get('visitante', '?')))
     competencia = discord.utils.escape_markdown(str(jogo.get('liga', 'Partida')))
@@ -645,7 +655,7 @@ def _texto_alerta_partida_ao_vivo(
 
 
 async def _monitorar_partidas_ao_vivo(jogos):
-    """Envia somente início, gols e marcos de período dos times de cada servidor."""
+    """Compara placar e fase por servidor/canal, envia só transições e persiste os avisos para evitar duplicatas."""
     jogos_por_chave = {
         _chave_partida_ao_vivo(jogo): jogo
         for jogo in jogos if isinstance(jogo, dict)
@@ -794,6 +804,7 @@ async def _monitorar_partidas_ao_vivo(jogos):
 
 
 def _avisos_agendados_devidos(jogo, agora, janela):
+    """Seleciona lembretes de 24 h e 30 min dentro da janela do ciclo de agenda."""
     if str(jogo.get('tipo_status', '')).upper() == 'ENCERRADO':
         return []
 
@@ -842,6 +853,7 @@ def _mensagem_aviso_agendado(jogo, avisos):
 
 
 async def enviar_avisos_partidas_agendados():
+    """Publica lembretes de partidas futuras uma vez por servidor e canal configurado."""
     try:
         with open(DATA_PATH, 'r', encoding='utf-8') as arquivo:
             jogos = json.load(arquivo)
@@ -1054,6 +1066,7 @@ async def iniciar_configuracao_servidor(guild):
         _prompted_guilds.add(guild.id)
 
 
+# !config: permite consultar ou reabrir a configuração persistida deste servidor.
 @bot.command(name='configresenha', aliases=[
     'config', 'configuracao', 'configuração', 'configurar',
     'configuracaoresenha', 'configuraçãoresenha', 'configurarresenha', 'setup',
@@ -1111,6 +1124,7 @@ async def configresenha(ctx):
     _prompted_guilds.add(ctx.guild.id)
 
 
+# !aqui: escolhe o canal que receberá os avisos automáticos deste servidor.
 @bot.command(name='aqui')
 async def aqui(ctx):
     """Define o canal atual como único destino dos avisos automáticos do servidor."""
@@ -1715,6 +1729,122 @@ async def on_message(message):
 
 # COMANDOS DISCORD: cada função abaixo implementa uma ação disponível pelo prefixo !.
 # !salve: responde ao cumprimento com a zoeira leve que dá o tom do bot.
+class ClassificacaoLigaView(discord.ui.View):
+    """HUD paginado da classificação, controlado por quem chamou o comando."""
+
+    def __init__(self, autor_id, chave_liga, linhas):
+        super().__init__(timeout=300)
+        self.autor_id = autor_id
+        self.chave_liga = chave_liga
+        self.liga = LIGAS_CLASSIFICACAO[chave_liga]
+        self.linhas = linhas
+        self.pagina = 0
+        self.mensagem = None
+
+        self.botao_anterior = discord.ui.Button(
+            label='⬅️ Anterior', style=discord.ButtonStyle.secondary, disabled=True
+        )
+        self.botao_proximo = discord.ui.Button(
+            label='Próximo ➡️', style=discord.ButtonStyle.secondary,
+            disabled=len(linhas) <= 10,
+        )
+        self.botao_anterior.callback = self._pagina_anterior
+        self.botao_proximo.callback = self._pagina_proxima
+        self.add_item(self.botao_anterior)
+        self.add_item(self.botao_proximo)
+
+    @property
+    def total_paginas(self):
+        return max(1, (len(self.linhas) + 9) // 10)
+
+    def criar_embed(self):
+        inicio = self.pagina * 10
+        fim = min(inicio + 10, len(self.linhas))
+        linhas_pagina = self.linhas[inicio:fim]
+        tabela = [
+            f"{'POS':>3} {'TIME':<19} {'J':>2} {'V':>2} {'E':>2} {'D':>2} {'G':>5} {'SG':>4} {'PTS':>3}"
+        ]
+        for linha in linhas_pagina:
+            time = linha['time'][:19]
+            saldo = str(linha['saldo'])
+            if saldo.isdigit() and int(saldo) > 0:
+                saldo = f'+{saldo}'
+            tabela.append(
+                f"{linha['posicao']:>3} {time:<19} "
+                f"{linha['jogos']:>2} {linha['vitorias']:>2} "
+                f"{linha['empates']:>2} {linha['derrotas']:>2} "
+                f"{linha['gols']:>5} {saldo:>4} {linha['pontos']:>3}"
+            )
+
+        embed = discord.Embed(
+            title=f"🏆 {self.liga['nome']} · Classificação",
+            description='```text\n' + '\n'.join(tabela) + '\n```',
+            color=discord.Color.gold(),
+            url=self.liga['url'],
+        )
+        horario = datetime.datetime.now(FUSO_BRASIL).strftime('%d/%m/%Y %H:%M')
+        embed.set_footer(
+            text=f'Posições {inicio + 1}–{fim} de {len(self.linhas)} · Flashscore · Atualizado em {horario}'
+        )
+        return embed
+
+    def _atualizar_botoes(self):
+        self.botao_anterior.disabled = self.pagina == 0
+        self.botao_proximo.disabled = self.pagina >= self.total_paginas - 1
+
+    async def _mudar_pagina(self, interaction, pagina):
+        if interaction.user.id != self.autor_id:
+            await interaction.response.send_message(
+                'Só quem pediu essa tabela pode usar as setas.', ephemeral=True
+            )
+            return
+
+        self.pagina = max(0, min(pagina, self.total_paginas - 1))
+        self._atualizar_botoes()
+        await interaction.response.edit_message(embed=self.criar_embed(), view=self)
+
+    async def _pagina_anterior(self, interaction):
+        await self._mudar_pagina(interaction, self.pagina - 1)
+
+    async def _pagina_proxima(self, interaction):
+        await self._mudar_pagina(interaction, self.pagina + 1)
+
+    async def on_timeout(self):
+        for item in self.children:
+            item.disabled = True
+        if self.mensagem is not None:
+            try:
+                await self.mensagem.edit(view=self)
+            except discord.HTTPException:
+                pass
+
+
+@bot.command(name='tabela', aliases=['classificacao', 'classificação', 'standings'])
+async def tabela_liga(ctx, *, liga=None):
+    if not liga:
+        opcoes = ', '.join(item['nome'] for item in LIGAS_CLASSIFICACAO.values())
+        await ctx.send(
+            f'Use `!tabela <liga>`. Ligas disponíveis: {opcoes}.\n'
+            'Exemplos: `!tabela brasileirão`, `!tabela premier league`.'
+        )
+        return
+
+    chave_liga = localizar_liga(liga)
+    if chave_liga is None:
+        opcoes = ', '.join(item['nome'] for item in LIGAS_CLASSIFICACAO.values())
+        await ctx.send(f'Não reconheci essa liga. Escolha uma destas: {opcoes}.')
+        return
+
+    try:
+        linhas = await obter_classificacao_liga(chave_liga)
+    except (RuntimeError, ValueError) as erro:
+        await ctx.send(f'Não consegui carregar essa classificação agora: {erro}')
+        return
+
+    view = ClassificacaoLigaView(ctx.author.id, chave_liga, linhas)
+    view.mensagem = await ctx.send(embed=view.criar_embed(), view=view)
+
+
 @bot.command()
 async def salve(ctx):
     await ctx.send(f'Coe {ctx.author.mention}, firmeza? Chegou o fiscal de sofá. Manda a resenha aí, porra. 😎✌🏿')
@@ -1741,6 +1871,7 @@ async def ajuda(ctx):
         "`!jogosconf`, `!conf` ou `!conferenceleague` - Próximos jogos da Conference League entre os monitorados.\n"
         "`!jogosliberta`, `!libertadores` ou `!liberta` - Próximos jogos da Libertadores entre os brasileiros monitorados.\n"
         "`!fasegrupos<torneio>` ou `!fg<torneio>` - Classificação da Libertadores, Sul-Americana ou Copa do Mundo.\n\n"
+        "`!tabela <liga>` - Classificação do Brasileirão, Premier League, LaLiga, Serie A, Bundesliga ou Ligue 1. Use as setas no HUD para avançar entre as posições.\n"
         "Nos resultados de hoje, jogo encerrado mostra o placar; ao vivo, o placar atualizado pelo Flashscore. "
         "Agora escolhe um comando e para de me encarar, pô."
     )
@@ -1884,7 +2015,8 @@ async def jogosliberta(ctx):
     )
 
 
-# MONITORAMENTO: reavalia avisos de horário com intervalo curto e estado persistente.
+# A agenda roda a cada 15 s para enviar lembretes de 24 h/30 min dentro da janela
+# prevista; o estado persistente impede repetir o mesmo lembrete.
 @tasks.loop(seconds=15)
 async def scheduled_notifications_loop():
     try:
@@ -1893,7 +2025,8 @@ async def scheduled_notifications_loop():
         print(f'[AGENDA] Falha ao verificar avisos de partidas futuras: {error}')
 
 
-# MONITORAMENTO: atualiza os dados globais; os avisos automáticos abaixo respeitam o filtro de cada servidor.
+# A cada CHECK_INTERVAL (70 s), atualiza o feed e avisa apenas novos inícios,
+# gols e marcos de período das partidas dos times filtrados em cada servidor.
 @tasks.loop(seconds=CHECK_INTERVAL)
 async def monitoring_loop():
     global _aviso_selecao_verificado_nesta_execucao
@@ -1928,7 +2061,8 @@ async def monitoring_loop():
     except Exception as error:
         print(f"[PARTIDA] Falha ao atualizar detalhes dos jogos ativos: {error}")
 
-    # O aviso é avaliado uma vez por inicialização e enviado a cada canal configurado.
+    # A Data FIFA é avisada uma vez por inicialização quando houver jogo da Seleção
+    # registrado para menos de 7 dias; a publicação respeita os canais configurados.
     if not _aviso_selecao_verificado_nesta_execucao:
         try:
             agora = datetime.datetime.now(FUSO_BRASIL)
