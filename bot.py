@@ -1825,7 +1825,8 @@ async def tabela_liga(ctx, *, liga=None):
         opcoes = ', '.join(item['nome'] for item in LIGAS_CLASSIFICACAO.values())
         await ctx.send(
             f'Use `!tabela <liga>`. Ligas disponíveis: {opcoes}.\n'
-            'Exemplos: `!tabela brasileirão`, `!tabela premier league`.'
+            'Exemplos: `!tabela brasileirão`, `!tabela PL`, `!tabela inglesão`, '
+            '`!tabela laliga`, `!tabela liga alemã` ou `!tabela francesão`.'
         )
         return
 

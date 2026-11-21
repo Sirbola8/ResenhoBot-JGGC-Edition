@@ -89,7 +89,7 @@ O primeiro clube deve ser um dos brasileiros. Depois, podem ser adicionados os d
 | `!datafifa` ou `!df` | Publica o aviso de Data FIFA. |
 | `!salve` | Responde ao cumprimento. |
 
-Para `!tabela`, os nomes aceitos incluem `brasileirão`, `premier league`, `laliga`, `serie a`, `bundesliga` e `ligue 1`. Exemplos de classificação por grupos: `!fasegrupos libertadores`, `!fg sulamericana` e `!fg copa do mundo`.
+O argumento de `!tabela` aceita nomes oficiais, apelidos, acentos ou não e variações comuns da web. Exemplos: `!tabela PL`, `!tabela inglesão`, `!tabela liga inglesa`, `!tabela laliga`, `!tabela liga espanhola`, `!tabela liga alemã`, `!tabela francesão`, `!tabela liga francesa`, `!tabela italianão` e `!tabela brasileirão`. Exemplos de classificação por grupos: `!fasegrupos libertadores`, `!fg sulamericana` e `!fg copa do mundo`.
 
 ## Arquivos principais
 
